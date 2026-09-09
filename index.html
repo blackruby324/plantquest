@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌱 노망 탐험대 🌱</title>
+    <title>🌱 식물 탐험대 🌱</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f9f4; margin: 0; }
         .box { background: white; padding: 20px; border-radius: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -18,7 +18,7 @@
         #quizBox { display: none; margin-top: 20px; padding: 20px; background: #fffde7; border: 3px dashed #fbc02d; border-radius: 18px; }
         .quiz-title { font-size: 1.3rem; color: #e65100; margin-bottom: 20px; font-weight: bold; word-break: keep-all; line-height: 1.4; }
         
-        /* OX 터치 버튼 */
+        /* OX 버튼 */
         .ox-btn-container { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; }
         .ox-btn { border: none; width: 90px; height: 90px; border-radius: 50%; font-size: 3rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
         .ox-btn:active { transform: scale(0.9); }
@@ -35,7 +35,7 @@
 <body>
 
 <div class="box">
-    <h1 class="main-title">🌱 노망 탐험대 🌱</h1>
+    <h1 class="main-title">🌱 식물 탐험대 🌱</h1>
 
     <div class="character-wrapper">
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
@@ -87,7 +87,7 @@
     let currentQuiz = null;
 
     const plantDictionary = {
-
+        //식물 번역
         "dandelion": "민들레",
         "taraxacum": "민들레",
         "clover": "토끼풀(클로버)",
@@ -107,7 +107,6 @@
         "impatiens": "봉선화",
         "morning glory": "나팔꽃",
         "ipomoea": "나팔꽃",
-
         "rose": "장미",
         "rosa": "장미",
         "tulip": "튤립",
@@ -225,10 +224,10 @@
         };
         reader.readAsDataURL(file);
 
-        result.innerHTML = "🔍 어떤 식물 친구일까? 찾아보는 중...";
+        result.innerHTML = "🔍 어떤 식물 친구일지 찾아보는 중...";
 
         if (!PLANT_ID_API_KEY || PLANT_ID_API_KEY === "YOUR_PLANT_ID_API_KEY") {
-            result.innerHTML = "⚠️ API 키가 설정되지 않았습니다!<br><span style='font-size:0.9rem; color:#666;'>코드 상단의 PLANT_ID_API_KEY 부분에 발급받은 키를 입력해주세요.</span>";
+            result.innerHTML = "⚠️ API 키가 설정되지 않았습니다!";
             return;
         }
 
