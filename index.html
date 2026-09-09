@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌱 어린이 식물 탐험대 🌱</title>
 
-    <!-- 썸네일 설정 -->
+    <!-- 썸네일 -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="🌱 어린이 식물 탐험대 🌱">
     <meta property="og:description" content="사진을 찍고 퀴즈를 맞히며 별을 모아보세요!">
@@ -17,18 +17,24 @@
         .main-title { color: #2e7d32; margin-bottom: 15px; font-size: 1.8rem; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
         .character-img { width: 180px; height: 180px; object-fit: contain; }
-        .stars-container { font-size: 2.5rem; min-height: 50px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; }
+        
+        /* 별 슬롯 배치 */
+        .stars-container { font-size: 3rem; min-height: 50px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; letter-spacing: 5px; }
+        .star { color: #e0e0e0; transition: color 0.5s ease, transform 0.3s ease; display: inline-block; }
+        .star.filled { color: #ffca28; text-shadow: 0 0 10px #ffe082; transform: scale(1.15); }
+
         #preview { width: 100%; max-height: 250px; object-fit: cover; margin-top: 15px; border-radius: 12px; display: none; }
         #result { margin-top: 15px; font-size: 1.25rem; font-weight: bold; color: #2e7d32; line-height: 1.5; }
         
-        /* OX 상자 */
+        /* OX 퀴즈 상자 */
         #quizBox { display: none; margin-top: 20px; padding: 20px; background: #fffde7; border: 3px dashed #fbc02d; border-radius: 18px; }
         .quiz-title { font-size: 1.3rem; color: #e65100; margin-bottom: 20px; font-weight: bold; word-break: keep-all; line-height: 1.4; }
         
-        /* OX 버튼 */
+        /* OX 터치 버튼 */
         .ox-btn-container { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; }
         .ox-btn { border: none; width: 90px; height: 90px; border-radius: 50%; font-size: 3rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
         .ox-btn:active { transform: scale(0.9); }
+        .ox-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-o { background: #4caf50; color: white; box-shadow: 0 6px #2e7d32; }
         .btn-x { background: #f44336; color: white; box-shadow: 0 6px #c62828; }
         
@@ -37,6 +43,10 @@
         input[type="file"] { display: none; }
         .btn { background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.3rem; cursor: pointer; display: inline-block; margin-top: 10px; font-weight: bold; box-shadow: 0 5px #2e7d32; }
         .btn:active { box-shadow: 0 0 #2e7d32; transform: translateY(5px); }
+        .btn.disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        #completeBox { display: none; margin-top: 20px; padding: 20px; background: #e8f5e9; border: 3px solid #2e7d32; border-radius: 18px; }
+        .complete-title { font-size: 1.6rem; color: #2e7d32; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -48,139 +58,156 @@
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
-    <div id="starsContainer" class="stars-container"></div>
+    <!-- 빈 별 슬롯 -->
+    <div id="starsContainer" class="stars-container">
+        <span class="star" id="star1">★</span>
+        <span class="star" id="star2">★</span>
+        <span class="star" id="star3">★</span>
+    </div>
 
-    <div>
-        <label for="cameraInput" class="btn">📷 식물 올리기 / 찍기</label>
+    <div id="uploadArea">
+        <label for="cameraInput" id="uploadBtn" class="btn">📷 식물 올리기 / 찍기</label>
         <input type="file" id="cameraInput" accept="image/*">
     </div>
 
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
-    <!-- OX 퀴즈 영역 -->
+    <!-- OX 퀴즈 함수 -->
     <div id="quizBox">
         <div id="quizQuestion" class="quiz-title"></div>
         
         <div class="ox-btn-container">
-            <button class="ox-btn btn-o" onclick="checkOX('O')">O</button>
-            <button class="ox-btn btn-x" onclick="checkOX('X')">X</button>
+            <button id="btnO" class="ox-btn btn-o" onclick="checkOX('O')">O</button>
+            <button id="btnX" class="ox-btn btn-x" onclick="checkOX('X')">X</button>
         </div>
 
         <div id="quizFeedback"></div>
     </div>
-</div>
 
-<!-- 효과음 -->
-<audio id="starSound" src="star.mp3" preload="auto"></audio>
+    <!-- 미션 완수시 -->
+    <div id="completeBox">
+        <div class="complete-title">🏆 미션 완수! 🏆</div>
+        <div style="font-size: 1.2rem; color: #1b5e20; font-weight: bold;">
+            별 3개를 모두 모았어요!<br>오늘의 위대한 식물 탐험가! 👏✨
+        </div>
+    </div>
+</div>
+    
+<audio id="answerSound" src="answer.mp3" preload="auto"></audio>
 <audio id="wrongSound" src="wrong.mp3" preload="auto"></audio>
 
 <script>
-    // 키 만료시 변경
+    // 키 변경란 (만료시 변경)
     const PLANT_ID_API_KEY = "693ZjbtN2eKVVZxShf5kwx49yMNnm5kpoW0pcrzwMcemhrvWpI"; 
 
     const cameraInput = document.getElementById('cameraInput');
+    const uploadBtn = document.getElementById('uploadBtn');
     const preview = document.getElementById('preview');
     const result = document.getElementById('result');
-    const starsContainer = document.getElementById('starsContainer');
     
-    // 오디오 객체
-    const starSound = document.getElementById('starSound');
+    const answerSound = document.getElementById('answerSound');
     const wrongSound = document.getElementById('wrongSound');
 
     const quizBox = document.getElementById('quizBox');
     const quizQuestion = document.getElementById('quizQuestion');
     const quizFeedback = document.getElementById('quizFeedback');
+    const completeBox = document.getElementById('completeBox');
+
+    const btnO = document.getElementById('btnO');
+    const btnX = document.getElementById('btnX');
 
     let starCount = 0;
+    const MAX_STARS = 3;
     const foundPlants = new Set();
 
     let currentPlant = "";
     let currentQuiz = null;
+    let isAnswering = false;
+
     let loadingInterval = null;
 
     // 식물 번역본
     const plantDictionary = {
-        "dandelion": "민들레",
-        "taraxacum": "민들레",
-        "clover": "토끼풀(클로버)",
+        "dandelion": "민들레", 
+        "taraxacum": "민들레", 
+        "clover": "토끼풀(클로버)", 
         "trifolium": "토끼풀",
-        "aster": "쑥부쟁이",
-        "fleabane": "개망초",
-        "erigeron": "개망초",
+        "aster": "쑥부쟁이", 
+        "fleabane": "개망초", 
+        "erigeron": "개망초", 
         "plantago": "질경이",
-        "chrysanthemum": "국화",
-        "cosmos": "코스모스",
-        "capsella": "냉이",
+        "chrysanthemum": "국화", 
+        "cosmos": "코스모스", 
+        "capsella": "냉이", 
         "equisetum": "쇠뜸이",
-        "violet": "제비꽃",
-        "viola": "제비꽃",
-        "oxalis": "괭이밥",
+        "violet": "제비꽃", 
+        "viola": "제비꽃", 
+        "oxalis": "괭이밥", 
         "chickweed": "별꽃",
-        "impatiens": "봉선화",
-        "morning glory": "나팔꽃",
-        "ipomoea": "나팔꽃",
-        "rose": "장미",
-        "rosa": "장미",
-        "tulip": "튤립",
-        "tulipa": "튤립",
+        "impatiens": "봉선화", 
+        "morning glory": "나팔꽃", 
+        "ipomoea": "나팔꽃", 
+        rose": "장미",
+        "rosa": "장미", 
+        "tulip": "튤립", 
+        "tulipa": "튤립", 
         "sunflower": "해바라기",
-        "helianthus": "해바라기",
-        "hydrangea": "수국",
-        "lily": "백합",
+        "helianthus": "해바라기", 
+        "hydrangea": "수국", 
+        "lily": "백합", 
         "lilium": "백합",
-        "carnation": "카네이션",
-        "dianthus": "패랭이꽃",
-        "marigold": "메리골드",
+        "carnation": "카네이션", 
+        "dianthus": "패랭이꽃", 
+        "marigold": "메리골드", 
         "azalea": "진달래/철쭉",
-        "rhododendron": "철쭉/진달래",
-        "forsythia": "개나리",
-        "camellia": "동백나무",
+        "rhododendron": "철쭉/진달래", 
+        "forsythia": "개나리", 
+        "camellia": "동백나무", 
         "geranium": "제라늄",
-        "lavender": "라벤더",
-        "pine": "소나무",
-        "pinus": "소나무",
+        "lavender": "라벤더", 
+        "pine": "소나무", 
+        "pinus": "소나무", 
         "ginkgo": "은행나무",
-        "maple": "단풍나무",
-        "acer": "단풍나무",
-        "cherry blossom": "벚나무",
+        "maple": "단풍나무", 
+        "acer": "단풍나무", 
+        "cherry blossom": "벚나무", 
         "prunus": "벚나무/매화",
-        "zelkova": "느티나무",
-        "metasequoia": "메타세쿼이아",
-        "willow": "버드나무",
+        "zelkova": "느티나무", 
+        "metasequoia": "메타세쿼이아", 
+        "willow": "버드나무", 
         "salix": "버드나무",
-        "oak": "참나무(도토리)",
-        "quercus": "참나무",
-        "bamboo": "대나무",
+        "oak": "참나무(도토리)", 
+        "quercus": "참나무", 
+        "bamboo": "대나무", 
         "magnolia": "목련",
-        "monstera": "몬스테라",
-        "sansevieria": "산세베리아",
-        "dracaena": "행운목/드라세나",
+        "monstera": "몬스테라", 
+        "sansevieria": "산세베리아", 
+        "dracaena": "행운목/드라세나", 
         "strelitzia": "여인초",
-        "spathiphyllum": "스파트필름",
-        "epipremnum": "스킨답서스",
-        "pothos": "스킨답서스",
+        "spathiphyllum": "스파트필름", 
+        "epipremnum": "스킨답서스", 
+        "pothos": "스킨답서스", 
         "ivy": "아이비",
-        "hedera": "아이비",
-        "cactus": "선인장",
-        "cactaceae": "선인장",
+        "hedera": "아이비", 
+        "cactus": "선인장", 
+        "cactaceae": "선인장", 
         "succulent": "다육식물",
-        "echeveria": "에케베리아(다육이)",
-        "ficus": "고무나무",
-        "zamioculcas": "금전수(돈나무)",
+        "echeveria": "에케베리아(다육이)", 
+        "ficus": "고무나무", 
+        "zamioculcas": "금전수(돈나무)", 
         "basil": "바질",
-        "mint": "박하/민트",
-        "rosemary": "로즈마리",
-        "strawberry": "딸기",
+        "mint": "박하/민트", 
+        "rosemary": "로즈마리", 
+        "strawberry": "딸기", 
         "fragaria": "딸기",
-        "tomato": "토마토",
-        "pepper": "고추",
-        "capsicum": "고추",
-        "cucumber": "오이",
+        "tomato": "토마토", 
+        "pepper": "고추", 
+        "capsicum": "고추", 
+        "cucumber": "오이", 
         "lettuce": "상추"
     };
-
-    // 번역 식물 OX 퀴즈 DB
+    //번역 식물 
     const quizDatabase = {
         "장미": { q: "❓ 장미는 빨간색 꽃일까요?", ans: "O" },
         "선인장": { q: "❓ 선인장 가시를 만지면 아플까요?", ans: "O" },
@@ -196,8 +223,7 @@
         "은행나무": { q: "❓ 가을이 되면 은행나무 잎은 노랗게 변할까요?", ans: "O" },
         "단풍나무": { q: "❓ 가을 단풍나무 잎은 파란색으로 변할까요?", ans: "X" }
     };
-
-    // 미번역 식물 OX 퀴즈 DB
+    // 미번역 식물
     const randomQuestions = [
         { q: "❓ 이 식물 친구도 햇빛을 받고 무럭무럭 자랄까요?", ans: "O" },
         { q: "❓ 이 식물 친구는 과자를 먹고 자랄까요?", ans: "X" },
@@ -235,6 +261,7 @@
             reader.onerror = error => reject(error);
         });
     }
+
     function startLoadingAnimation() {
         let dotCount = 1;
         result.innerHTML = "🔍 어떤 식물 친구일까? 찾아보는 중.";
@@ -256,11 +283,16 @@
     }
 
     cameraInput.addEventListener('change', async function(e) {
+        if (starCount >= MAX_STARS) return;
+
         const file = e.target.files[0];
         if (!file) return;
 
         quizBox.style.display = 'none';
         quizFeedback.innerHTML = '';
+        btnO.disabled = false;
+        btnX.disabled = false;
+        isAnswering = false;
 
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -273,7 +305,7 @@
 
         if (!PLANT_ID_API_KEY || PLANT_ID_API_KEY === "YOUR_PLANT_ID_API_KEY") {
             stopLoadingAnimation();
-            result.innerHTML = " API 키가 설정되지 않았습니다.";
+            result.innerHTML = "API 키가 설정되지 않았습니다!";
             return;
         }
 
@@ -300,7 +332,7 @@
                 } else if (response.status === 429) {
                     result.innerHTML = "API 사용량이 초과되었습니다. (429 오류, 관리자 문의)";
                 } else {
-                    result.innerHTML = "식물을 찾지 못했습니다. (오류 코드: ${response.status})";
+                    result.innerHTML = " 식물을 찾지 못했습니다. (오류 코드: ${response.status})";
                 }
                 return;
             }
@@ -315,8 +347,8 @@
                     result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!<br><span style="font-size:0.9rem; color:#888;">(이미 별을 받은 식물이에요!)</span>`;
                 } else {
                     result.innerHTML = `🌿 <b>${currentPlant}</b> 친구를 찾았어요!<br><span style="color:#e65100; font-weight:bold;">⭐ O, X 버튼을 눌러 정답을 맞춰보세요!</span>`;
-                    currentQuiz = quizDatabase[currentPlant] || getRandomQuiz();
                     
+                    currentQuiz = quizDatabase[currentPlant] || getRandomQuiz();
                     quizQuestion.innerHTML = `<b>[${currentPlant} 퀴즈]</b><br>${currentQuiz.q}`;
                     quizBox.style.display = 'block';
                 }
@@ -327,29 +359,41 @@
         } catch (error) {
             stopLoadingAnimation();
             console.error(error);
-            result.innerHTML = " 네트워크 오류가 발생했거나 서버 연결 실패입니다.";
+            result.innerHTML = "⚠️ 네트워크 오류가 발생했거나 서버 연결 실패입니다.";
         }
     });
 
     function checkOX(userChoice) {
-        if (!currentQuiz) return;
+        if (isAnswering || starCount >= MAX_STARS || !currentQuiz) return;
 
         if (userChoice === currentQuiz.ans) {
+            isAnswering = true;
+            btnO.disabled = true;
+            btnX.disabled = true;
+
             foundPlants.add(currentPlant);
             starCount++;
-            starsContainer.innerHTML = "⭐".repeat(starCount);
+            
+            const targetStar = document.getElementById(`star${starCount}`);
+            if (targetStar) {
+                targetStar.classList.add('filled');
+            }
 
             quizFeedback.style.color = "#2e7d32";
             quizFeedback.innerHTML = "🎉 우와 정답이에요! ⭐ 별 획득!";
             
-            if (starSound) {
-                starSound.currentTime = 0;
-                starSound.play().catch(err => console.log("음원 재생 제한:", err));
+            if (answerSound) {
+                answerSound.currentTime = 0;
+                answerSound.play().catch(err => console.log("음원 재생 제한:", err));
             }
 
             setTimeout(() => {
                 quizBox.style.display = 'none';
-            }, 2000);
+
+                if (starCount >= MAX_STARS) {
+                    completeMission();
+                }
+            }, 1800);
 
         } else {
             quizFeedback.style.color = "#d32f2f";
@@ -360,6 +404,14 @@
                 wrongSound.play().catch(err => console.log("음원 재생 제한:", err));
             }
         }
+    }
+
+    function completeMission() {
+        completeBox.style.display = 'block';
+        uploadBtn.classList.add('disabled');
+        uploadBtn.innerText = "🔒 오늘 탐험 완료!";
+        cameraInput.disabled = true;
+        result.innerHTML = "🌟 축하합니다! 모든 탐험을 마쳤습니다! 🌟";
     }
 </script>
 
