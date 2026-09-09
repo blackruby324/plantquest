@@ -1,6 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식물 구별기</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f9f4; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .main-title { color: #2e7d32; margin-bottom: 20px; }
+        .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
+        .character-img { width: 250px; height: 250px; object-fit: contain; }
+        .stars-container { font-size: 2.2rem; min-height: 45px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; }
+        #preview { width: 100%; max-height: 350px; object-fit: cover; margin-top: 20px; border-radius: 8px; display: none; }
+        #result { margin-top: 20px; font-size: 1.3rem; font-weight: bold; color: #2e7d32; }
+        input[type="file"] { display: none; }
+        .btn { background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1 class="main-title">🌱 AI 식물 구별기 🌱</h1>
+
+    <div class="character-wrapper">
+        <img id="character" class="character-img" src="character.png" alt="캐릭터">
+    </div>
+
+    <div id="starsContainer" class="stars-container"></div>
+
+    <div>
+        <label for="cameraInput" class="btn">📷 사진 찍기 / 선택</label>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
+    </div>
+
+    <img id="preview" alt="선택한 식물 사진">
+    <div id="result"></div>
+</div>
+
+<audio id="starSound" src="star.mp3" preload="auto"></audio>
+
 <script>
-    // 💡 본인의 PlantNet API 키를 여기에 넣으세요!
-    const PLANTNET_API_KEY = "2b10oIwvXQvPxn9d5naM48a6e"; 
+    // 💡 발급받으신 본인의 PlantNet API 키로 변경해 주세요.
+    const PLANTNET_API_KEY = "YOUR_API_KEY_HERE"; 
 
     const cameraInput = document.getElementById('cameraInput');
     const preview = document.getElementById('preview');
@@ -15,7 +56,6 @@
         const file = e.target.files[0];
         if (!file) return;
 
-        // 선택한 이미지 미리보기
         const reader = new FileReader();
         reader.onload = function(event) {
             preview.src = event.target.result;
@@ -25,7 +65,6 @@
 
         result.innerHTML = "🔍 AI가 식물을 분석 중입니다...";
 
-        // API 키 미입력 체크
         if (!PLANTNET_API_KEY || PLANTNET_API_KEY === "YOUR_API_KEY_HERE") {
             result.innerHTML = "⚠️ API 키가 설정되지 않았습니다.<br><span style='font-size:0.9rem;'>my.plantnet.org에서 키를 발급받아 입력해주세요.</span>";
             return;
@@ -36,7 +75,6 @@
             formData.append('images', file);
             formData.append('organs', 'auto');
 
-            // PlantNet API 요청
             const apiUrl = `https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}&lang=ko`;
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -59,7 +97,6 @@
             if (data.results && data.results.length > 0) {
                 const topResult = data.results[0];
                 
-                // 한글 이름이 없을 경우 일반 이름 또는 학명 추출
                 let plantName = "알 수 없는 식물";
                 if (topResult.species.commonNames && topResult.species.commonNames.length > 0) {
                     plantName = topResult.species.commonNames[0];
@@ -77,7 +114,6 @@
                     starsContainer.innerHTML = "⭐".repeat(starCount);
                     result.innerHTML = `결과: 🌿 <b>${plantName}</b> (${score}% 일치) 첫 발견! ⭐ +1`;
 
-                    // 효과음 재생
                     if (starSound) {
                         starSound.currentTime = 0;
                         starSound.play().catch(err => console.log("음원 재생 권한 필요:", err));
@@ -92,3 +128,6 @@
         }
     });
 </script>
+
+</body>
+</html>
