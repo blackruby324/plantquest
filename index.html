@@ -40,6 +40,9 @@
 <audio id="starSound" src="star.mp3" preload="auto"></audio>
 
 <script>
+    // 💡 발급받은 본인의 PlantNet API 키를 따옴표 안에 넣으세요
+    const PLANTNET_API_KEY = "2b10oIwvXQvPxn9d5naM48a6e"; 
+
     const cameraInput = document.getElementById('cameraInput');
     const preview = document.getElementById('preview');
     const result = document.getElementById('result');
@@ -48,17 +51,6 @@
 
     let starCount = 0;
     const foundPlants = new Set();
-
-    // 식물 가상 AI 분류 데이터베이스 (웹 표준 인식용)
-    const plantDatabase = [
-        { name: "몬스테라", keywords: ["monstera", "leaf"] },
-        { name: "장미", keywords: ["rose", "flower"] },
-        { name: "선인장", keywords: ["cactus", "succulent"] },
-        { name: "스파티필름", keywords: ["peace lily", "spathiphyllum"] },
-        { name: "스투키", keywords: ["sansevieria", "stuckyi"] },
-        { name: "해바라기", keywords: ["sunflower"] },
-        { name: "튤립", keywords: ["tulip"] }
-    ];
 
     cameraInput.addEventListener('change', async function(e) {
         const file = e.target.files[0];
@@ -73,34 +65,65 @@
 
         result.innerHTML = "🔍 AI가 식물을 분석 중입니다...";
 
-        // CORS 방해 없이 즉시 분석 처리
-        setTimeout(() => {
-            const fileName = file.name.toLowerCase();
-            let detectedPlant = "몬스테라"; // 기본 분석값
-            let confidence = Math.floor(Math.random() * 15) + 85; // 85~99% 일치율
+        if (!PLANTNET_API_KEY || PLANTNET_API_KEY === "YOUR_API_KEY_HERE") {
+            result.innerHTML = "⚠️ API 키가 설정되지 않았습니다.<br><span style='font-size:0.9rem;'>코드 내 API 키를 입력해주세요.</span>";
+            return;
+        }
 
-            // 파일명 기반 또는 무작위 탐지 알고리즘
-            for (let plant of plantDatabase) {
-                if (plant.keywords.some(kw => fileName.includes(kw))) {
-                    detectedPlant = plant.name;
-                    break;
-                }
+        try {
+            const formData = new FormData();
+            formData.append('images', file);
+            formData.append('organs', 'auto');
+
+            // CORS 차단을 우회하여 데이터 전송 (프록시 적용)
+            const targetApi = `https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}&lang=ko`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetApi)}`;
+
+            const response = await fetch(proxyUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                result.innerHTML = "❌ 식물을 식별할 수 없습니다.<br><span style='font-size:0.85rem; color:#666;'>잎이나 꽃이 잘 보이게 선명한 사진을 사용해보세요.</span>";
+                return;
             }
 
-            if (foundPlants.has(detectedPlant)) {
-                result.innerHTML = `결과: 🌿 <b>${detectedPlant}</b> (${confidence}% 일치)<br><span style="font-size:0.95rem; color:#888;">(이미 발견한 식물입니다)</span>`;
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+                const topResult = data.results[0];
+                
+                // 한국어 이름 추출 (없으면 학명)
+                let plantName = "";
+                if (topResult.species.commonNames && topResult.species.commonNames.length > 0) {
+                    plantName = topResult.species.commonNames[0];
+                } else {
+                    plantName = topResult.species.scientificNameWithoutAuthor;
+                }
+
+                const score = Math.round(topResult.score * 100);
+
+                if (foundPlants.has(plantName)) {
+                    result.innerHTML = `결과: 🌿 <b>${plantName}</b> (${score}% 일치)<br><span style="font-size:0.95rem; color:#888;">(이미 발견한 식물입니다)</span>`;
+                } else {
+                    foundPlants.add(plantName);
+                    starCount++;
+                    starsContainer.innerHTML = "⭐".repeat(starCount);
+                    result.innerHTML = `결과: 🌿 <b>${plantName}</b> (${score}% 일치) 첫 발견! ⭐ +1`;
+
+                    if (starSound) {
+                        starSound.currentTime = 0;
+                        starSound.play().catch(err => console.log("음원 재생 권한 필요:", err));
+                    }
+                }
             } else {
-                foundPlants.add(detectedPlant);
-                starCount++;
-                starsContainer.innerHTML = "⭐".repeat(starCount);
-                result.innerHTML = `결과: 🌿 <b>${detectedPlant}</b> (${confidence}% 일치) 첫 발견! ⭐ +1`;
-
-                if (starSound) {
-                    starSound.currentTime = 0;
-                    starSound.play().catch(err => console.log("음원 재생 권한 필요:", err));
-                }
+                result.innerHTML = "❌ 식물을 인식하지 못했습니다.";
             }
-        }, 1500);
+        } catch (error) {
+            console.error(error);
+            result.innerHTML = "⚠️ 네트워크 통신에 실패했습니다.";
+        }
     });
 </script>
 
