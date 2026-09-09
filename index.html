@@ -3,41 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>식물 탐험대 & 퀴즈</title>
+    <title>🌱 어린이 노망 탐험대 🌱</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f9f4; }
-        .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .main-title { color: #2e7d32; margin-bottom: 20px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f9f4; margin: 0; }
+        .box { background: white; padding: 20px; border-radius: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .main-title { color: #2e7d32; margin-bottom: 15px; font-size: 1.8rem; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
-        .character-img { width: 220px; height: 220px; object-fit: contain; }
-        .stars-container { font-size: 2.2rem; min-height: 45px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; }
-        #preview { width: 100%; max-height: 300px; object-fit: cover; margin-top: 15px; border-radius: 8px; display: none; }
-        #result { margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: #2e7d32; }
+        .character-img { width: 250px; height: 250px; object-fit: contain; }
+        .stars-container { font-size: 2.5rem; min-height: 50px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; }
+        #preview { width: 100%; max-height: 250px; object-fit: cover; margin-top: 15px; border-radius: 12px; display: none; }
+        #result { margin-top: 15px; font-size: 1.25rem; font-weight: bold; color: #2e7d32; }
         
-        /* 퀴즈 박스 스타일 */
-        #quizBox { display: none; margin-top: 20px; padding: 15px; background: #e8f5e9; border: 2px dashed #4caf50; border-radius: 8px; }
-        .quiz-title { font-size: 1.1rem; color: #1b5e20; margin-bottom: 10px; font-weight: bold; }
-        .quiz-input { padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 5px; width: 60%; text-align: center; }
-        .quiz-btn { background: #ff9800; color: white; padding: 10px 15px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-left: 5px; }
-        #quizFeedback { margin-top: 10px; font-weight: bold; font-size: 1rem; }
+        /* 유치원생용 OX 퀴즈 상자 */
+        #quizBox { display: none; margin-top: 20px; padding: 20px; background: #fffde7; border: 3px dashed #fbc02d; border-radius: 18px; }
+        .quiz-title { font-size: 1.3rem; color: #e65100; margin-bottom: 20px; font-weight: bold; word-break: keep-all; line-height: 1.4; }
+        
+        /* O, X 큰 터치 버튼 스타일 */
+        .ox-btn-container { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; }
+        .ox-btn { border: none; width: 90px; height: 90px; border-radius: 50%; font-size: 3rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
+        .ox-btn:active { transform: scale(0.9); }
+        .btn-o { background: #4caf50; color: white; box-shadow: 0 6px #2e7d32; }
+        .btn-x { background: #f44336; color: white; box-shadow: 0 6px #c62828; }
+        
+        #quizFeedback { margin-top: 15px; font-weight: bold; font-size: 1.2rem; word-break: keep-all; }
 
         input[type="file"] { display: none; }
-        .btn { background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; display: inline-block; margin-top: 10px; }
+        .btn { background: #4caf50; color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.3rem; cursor: pointer; display: inline-block; margin-top: 10px; font-weight: bold; box-shadow: 0 5px #2e7d32; }
+        .btn:active { box-shadow: 0 0 #2e7d32; transform: translateY(5px); }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1 class="main-title">🌱 AI 식물 탐험대 🌱</h1>
+    <h1 class="main-title">🌱 노망 탐험대 🌱</h1>
 
     <div class="character-wrapper">
-        <img id="character" class="character-img" src="character.png" alt="캐릭터">
+        <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
     <div id="starsContainer" class="stars-container"></div>
 
     <div>
-        <label for="cameraInput" class="btn">📷 식물 찾기</label>
+        <label for="cameraInput" class="btn">📷 식물 찍기!</label>
         <input type="file" id="cameraInput" accept="image/*" capture="environment">
     </div>
 
@@ -47,8 +54,12 @@
     <!-- 퀴즈 영역 -->
     <div id="quizBox">
         <div id="quizQuestion" class="quiz-title"></div>
-        <input type="text" id="quizAnswer" class="quiz-input" placeholder="정답 입력 (예: 빨강)">
-        <button id="quizSubmit" class="quiz-btn">정답 확인</button>
+        
+        <div class="ox-btn-container">
+            <button class="ox-btn btn-o" onclick="checkOX('O')">O</button>
+            <button class="ox-btn btn-x" onclick="checkOX('X')">X</button>
+        </div>
+
         <div id="quizFeedback"></div>
     </div>
 </div>
@@ -66,8 +77,6 @@
 
     const quizBox = document.getElementById('quizBox');
     const quizQuestion = document.getElementById('quizQuestion');
-    const quizAnswer = document.getElementById('quizAnswer');
-    const quizSubmit = document.getElementById('quizSubmit');
     const quizFeedback = document.getElementById('quizFeedback');
 
     let starCount = 0;
@@ -76,18 +85,18 @@
     let currentPlant = "";
     let currentQuiz = null;
 
-    // 식물별 맞춤 퀴즈 데이터베이스 (질문, 키워드 정답 배열)
+    // 🎈 유치원생용 초간단 OX 퀴즈 DB
     const quizDatabase = {
-        "장미": { q: "❓ 장미하면 떠오르는 대표적인 색깔은 무엇일까요?", answers: ["빨강", "빨간색", "적색", "레드"] },
-        "몬스테라": { q: "❓ 몬스테라 잎에는 구멍이 뚫려 있을까요? (있음 / 없음)", answers: ["있음", "있다", "어", "ㅇㅇ", "네"] },
-        "선인장": { q: "❓ 선인장이 줄기에 많이 저장하고 있는 것은 무엇일까요?", answers: ["물", "수분"] },
-        "해바라기": { q: "❓ 해바라기는 어떤 하늘의 천체를 바라보고 자랄까요?", answers: ["해", "태양", "햇빛"] },
-        "산세베리아": { q: "❓ 산세베리아는 밤에 어떤 가스를 마시고 산소를 뿜을까요? (탄소 / 수소)", answers: ["탄소", "이산화탄소"] },
-        "바질": { q: "❓ 바질은 주로 어떤 요리(피자/파스타)에 자주 들어가는 향신료일까요?", answers: ["이탈리아", "파스타", "피자", "양식"] },
-        "소나무": { q: "❓ 소나무는 사계절 내내 푸른 나무일까요? (예 / 아니오)", answers: ["예", "네", "맞음", "ㅇㅇ"] },
-        "민들레": { q: "❓ 민들레 씨앗은 무엇을 타고 멀리 날아갈까요?", answers: ["바람"] },
-        "튤립": { q: "❓ 튤립으로 가장 유명한 유럽의 국가 이름은 어디일까요?", answers: ["네덜란드"] },
-        "default": { q: "❓ 식물이 자라기 위해 반드시 필요한 3가지는 햇빛, 흙, 그리고 '이것'입니다. 이것은?", answers: ["물"] }
+        "장미": { q: "❓ 장미는 빨간색 꽃일까요?", ans: "O" },
+        "선인장": { q: "❓ 선인장 가시를 만지면 아플까요?", ans: "O" },
+        "해바라기": { q: "❓ 해바라기는 햇님을 좋아할까요?", ans: "O" },
+        "몬스테라": { q: "❓ 몬스테라 잎에는 구멍이 뚫려 있을까요?", ans: "O" },
+        "민들레": { q: "❓ 민들레 씨앗은 물속에서 날아갈까요?", ans: "X" }, // 바람 타고 날아감
+        "소나무": { q: "❓ 소나무 잎은 동글동글 부드러울까요?", ans: "X" }, // 뾰족함
+        "튤립": { q: "❓ 튤립은 예쁜 꽃일까요?", ans: "O" },
+        "바질": { q: "❓ 바질은 분홍색 잎을 가졌을까요?", ans: "X" }, // 초록색
+        "산세베리아": { q: "❓ 산세베리아는 키가 길쭉할까요?", ans: "O" },
+        "default": { q: "❓ 식물 친구는 물을 먹어야 잘 자랄까요?", ans: "O" }
     };
 
     const plantDictionary = {
@@ -122,10 +131,8 @@
         const file = e.target.files[0];
         if (!file) return;
 
-        // UI 초기화
         quizBox.style.display = 'none';
         quizFeedback.innerHTML = '';
-        quizAnswer.value = '';
 
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -134,7 +141,7 @@
         };
         reader.readAsDataURL(file);
 
-        result.innerHTML = "🔍 식물을 분석 중입니다...";
+        result.innerHTML = "🔍 어떤 식물 친구일까? 찾아보는 중...";
 
         try {
             const base64Image = await fileToBase64(file);
@@ -152,7 +159,7 @@
             });
 
             if (!response.ok) {
-                result.innerHTML = `⚠️ 식물 인식에 실패했습니다. (${response.status})`;
+                result.innerHTML = `⚠️ 식물을 못 찾았어요! (오류: ${response.status})`;
                 return;
             }
 
@@ -164,64 +171,51 @@
                 const score = Math.round(topMatch.probability * 100);
 
                 if (foundPlants.has(currentPlant)) {
-                    result.innerHTML = `🌿 <b>${currentPlant}</b> (${score}% 일치)<br><span style="font-size:0.9rem; color:#888;">(이미 별을 획득한 식물입니다)</span>`;
+                    result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!<br><span style="font-size:0.9rem; color:#888;">(이미 별을 받은 식물이에요!)</span>`;
                 } else {
-                    result.innerHTML = `🌿 <b>${currentPlant}</b> (${score}% 일치) 발견!<br><span style="color:#d81b60;">⭐ 별을 얻으려면 아래 퀴즈를 풀어보세요!</span>`;
+                    result.innerHTML = `🌿 <b>${currentPlant}</b> 친구를 찾았어요!<br><span style="color:#e65100; font-weight:bold;">⭐ O, X 버튼을 눌러 정답을 맞춰보세요!</span>`;
                     
-                    // 퀴즈 문제 생성 및 표시
+                    // 어린이 맞춤 OX 퀴즈 불러오기
                     currentQuiz = quizDatabase[currentPlant] || quizDatabase["default"];
                     quizQuestion.innerHTML = `<b>[${currentPlant} 퀴즈]</b><br>${currentQuiz.q}`;
                     quizBox.style.display = 'block';
                 }
             } else {
-                result.innerHTML = "❌ 식물을 인식하지 못했습니다.";
+                result.innerHTML = "❌ 식물을 인식하지 못했어요. 선명하게 다시 찍어주세요!";
             }
 
         } catch (error) {
             console.error(error);
-            result.innerHTML = "⚠️ 분석 중 오류가 발생했습니다.";
+            result.innerHTML = "⚠️ 오류가 발생했어요. 다시 시도해주세요.";
         }
     });
 
-    // 퀴즈 정답 제출 이벤트
-    quizSubmit.addEventListener('click', function() {
+    // ⭕❌ 버튼 클릭 검사 함수
+    function checkOX(userChoice) {
         if (!currentQuiz) return;
 
-        const userAns = quizAnswer.value.trim().toLowerCase();
-
-        if (!userAns) {
-            quizFeedback.style.color = "#d32f2f";
-            quizFeedback.innerHTML = "정답을 입력해주세요!";
-            return;
-        }
-
-        // 입력값이 정답 목록 중 하나라도 포함되는지 검사
-        const isCorrect = currentQuiz.answers.some(ans => userAns.includes(ans.toLowerCase()));
-
-        if (isCorrect) {
+        if (userChoice === currentQuiz.ans) {
             foundPlants.add(currentPlant);
             starCount++;
             starsContainer.innerHTML = "⭐".repeat(starCount);
 
             quizFeedback.style.color = "#2e7d32";
-            quizFeedback.innerHTML = "🎉 정답입니다! ⭐ +1 획득!";
+            quizFeedback.innerHTML = "🎉 우와 정답이에요! ⭐ 별 획득!";
             
-            // 효과음 재생
             if (starSound) {
                 starSound.currentTime = 0;
                 starSound.play().catch(err => console.log("음원 재생 제한:", err));
             }
 
-            // 2초 뒤 퀴즈창 닫기
             setTimeout(() => {
                 quizBox.style.display = 'none';
             }, 2000);
 
         } else {
             quizFeedback.style.color = "#d32f2f";
-            quizFeedback.innerHTML = "❌ 오답입니다! 다시 생각해보세요.";
+            quizFeedback.innerHTML = "❌ 아쉬워요! 다른 버튼을 눌러보세요!";
         }
-    });
+    }
 </script>
 
 </body>
