@@ -9,7 +9,7 @@
         .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .main-title { color: #2e7d32; margin-bottom: 20px; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
-        .character-img { width: 250px; height: 250px; object-fit: contain; }
+        .character-img { width: 300px; height: 300px; object-fit: contain; }
         .stars-container { font-size: 2.2rem; min-height: 45px; margin-bottom: 15px; word-break: break-all; line-height: 1.2; }
         #preview { width: 100%; max-height: 350px; object-fit: cover; margin-top: 20px; border-radius: 8px; display: none; }
         #result { margin-top: 20px; font-size: 1.3rem; font-weight: bold; color: #2e7d32; }
@@ -40,7 +40,7 @@
 <audio id="starSound" src="star.mp3" preload="auto"></audio>
 
 <script>
-    // 💡 발급받은 본인의 PlantNet API 키를 따옴표 안에 넣으세요
+    // 💡 발급받은 본인의 PlantNet API 키를 입력하세요.
     const PLANTNET_API_KEY = "2b10oIwvXQvPxn9d5naM48a6e"; 
 
     const cameraInput = document.getElementById('cameraInput');
@@ -56,6 +56,7 @@
         const file = e.target.files[0];
         if (!file) return;
 
+        // 미리보기 설정
         const reader = new FileReader();
         reader.onload = function(event) {
             preview.src = event.target.result;
@@ -66,26 +67,33 @@
         result.innerHTML = "🔍 AI가 식물을 분석 중입니다...";
 
         if (!PLANTNET_API_KEY || PLANTNET_API_KEY === "YOUR_API_KEY_HERE") {
-            result.innerHTML = "⚠️ API 키가 설정되지 않았습니다.<br><span style='font-size:0.9rem;'>코드 내 API 키를 입력해주세요.</span>";
+            result.innerHTML = "⚠️ API 키가 설정되지 않았습니다.";
             return;
         }
 
         try {
+            // PlantNet 멀티파트 폼 데이터 생성
             const formData = new FormData();
-            formData.append('images', file);
+            formData.append('images', file, file.name || 'plant.jpg');
             formData.append('organs', 'auto');
 
-            // CORS 차단을 우회하여 데이터 전송 (프록시 적용)
-            const targetApi = `https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}&lang=ko`;
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetApi)}`;
+            // API 표준 직접 호출 주소
+            const apiUrl = `https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}&lang=ko`;
 
-            const response = await fetch(proxyUrl, {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 body: formData
             });
 
             if (!response.ok) {
-                result.innerHTML = "❌ 식물을 식별할 수 없습니다.<br><span style='font-size:0.85rem; color:#666;'>잎이나 꽃이 잘 보이게 선명한 사진을 사용해보세요.</span>";
+                const errData = await response.json().catch(() => ({}));
+                if (response.status === 404) {
+                    result.innerHTML = "❌ AI가 알고 있는 식물 목록에 없습니다.<br><span style='font-size:0.85rem; color:#666;'>다른 식물 사진으로 찍어보세요.</span>";
+                } else if (response.status === 401 || response.status === 403) {
+                    result.innerHTML = "⚠️ API 키 승인 실패 (키를 다시 확인해주세요)";
+                } else {
+                    result.innerHTML = `⚠️ 서버 오류가 발생했습니다 (${response.status})`;
+                }
                 return;
             }
 
@@ -94,7 +102,6 @@
             if (data.results && data.results.length > 0) {
                 const topResult = data.results[0];
                 
-                // 한국어 이름 추출 (없으면 학명)
                 let plantName = "";
                 if (topResult.species.commonNames && topResult.species.commonNames.length > 0) {
                     plantName = topResult.species.commonNames[0];
