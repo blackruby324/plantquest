@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌱 어린이 식물 탐험대 🌱</title>
+    <title>🌱 노망 탐험대 🌱</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f9f4; margin: 0; }
         .box { background: white; padding: 20px; border-radius: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -35,7 +35,7 @@
 <body>
 
 <div class="box">
-    <h1 class="main-title">🌱 AI 식물 탐험대 🌱</h1>
+    <h1 class="main-title">🌱 노망 탐험대 🌱</h1>
 
     <div class="character-wrapper">
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
@@ -44,8 +44,8 @@
     <div id="starsContainer" class="stars-container"></div>
 
     <div>
-        <label for="cameraInput" class="btn">📷 식물 찍기!</label>
-        <input type="file" id="cameraInput" accept="image/*" capture="environment">
+        <label for="cameraInput" class="btn">📷 노망 찍기!</label>
+        <input type="file" id="cameraInput" accept="image/*">
     </div>
 
     <img id="preview" alt="선택한 식물 사진">
@@ -87,7 +87,7 @@
     let currentQuiz = null;
 
     const plantDictionary = {
-        // [들꽃 / 길가 식물]
+
         "dandelion": "민들레",
         "taraxacum": "민들레",
         "clover": "토끼풀(클로버)",
@@ -108,7 +108,6 @@
         "morning glory": "나팔꽃",
         "ipomoea": "나팔꽃",
 
-        // [인기 꽃 / 원예 식물]
         "rose": "장미",
         "rosa": "장미",
         "tulip": "튤립",
@@ -127,8 +126,6 @@
         "camellia": "동백나무",
         "geranium": "제라늄",
         "lavender": "라벤더",
-
-        // [나무 / 가로수]
         "pine": "소나무",
         "pinus": "소나무",
         "ginkgo": "은행나무",
@@ -144,8 +141,6 @@
         "quercus": "참나무",
         "bamboo": "대나무",
         "magnolia": "목련",
-
-        // [집에서 키우는 관엽식물 / 다육이]
         "monstera": "몬스테라",
         "sansevieria": "산세베리아",
         "dracaena": "행운목/드라세나",
@@ -161,8 +156,6 @@
         "echeveria": "에케베리아(다육이)",
         "ficus": "고무나무",
         "zamioculcas": "금전수(돈나무)",
-
-        // [허브 / 채소 / 과일]
         "basil": "바질",
         "mint": "박하/민트",
         "rosemary": "로즈마리",
