@@ -14,7 +14,7 @@
             --border-color: #e0e0e0;
             --star-empty: #e0e0e0;
             
-            --panel-bg: #f9f9f9;
+            --panel-bg: #ffffff;
             --panel-border: #c8e6c9;
             
             --book-btn-bg: #81c784;
@@ -79,35 +79,39 @@
             transition: background-color 0.3s;
         }
 
-        .toggle-btn {
+        /* 왼쪽 위 설정 버튼 */
+        .top-left-settings {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+        }
+
+        .icon-btn {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             color: var(--text-color);
-            padding: 10px 16px;
+            padding: 8px 12px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            transition: background 0.2s;
-        }
-        .toggle-btn:hover {
-            background: var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .collapsible-content {
+        .settings-dropdown {
             display: none;
+            position: absolute;
+            top: 45px;
+            left: 0;
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 12px;
             padding: 12px;
-            margin-bottom: 15px;
+            width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             text-align: left;
+            z-index: 20;
         }
 
         .settings-item {
@@ -124,16 +128,78 @@
             background: #e57373;
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 6px 10px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.85rem;
         }
         .action-btn.reset-btn {
             background: #ff9800;
         }
 
-        .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 5px; }
+        /* 오른쪽 아래 도감 버턴 & 팝업 모달 */
+        .bottom-right-pokedex {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .pokedex-fab-btn {
+            background: var(--book-btn-bg);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        .pokedex-fab-btn:hover {
+            background: var(--book-btn-hover);
+        }
+
+        .pokedex-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pokedex-modal-content {
+            background: var(--box-bg);
+            border: 2px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .pokedex-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 25px; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
         .character-img { width: 160px; height: 160px; object-fit: contain; }
         
@@ -141,7 +207,17 @@
         .star { color: var(--star-empty); transition: color 0.5s ease, transform 0.3s ease; display: inline-block; }
         .star.filled { color: #ffca28; text-shadow: 0 0 10px #ffe082; transform: scale(1.15); }
 
-        .pokedex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        /* 멘트 영역 */
+        .custom-message-box {
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 1.05rem;
+            color: var(--text-color);
+            min-height: 24px;
+            white-space: pre-line;
+        }
+
+        .pokedex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .pokedex-card { background: var(--card-bg); border-radius: 12px; padding: 8px; border: 1px solid var(--card-border); box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
         .pokedex-card img { width: 100%; height: 75px; object-fit: cover; border-radius: 8px; background-color: #333; }
         .pokedex-card .plant-name { font-size: 0.85rem; font-weight: bold; color: var(--title-color); margin-top: 5px; word-break: keep-all; }
@@ -176,19 +252,18 @@
 <body>
 
 <div class="box">
-    <!-- 설정 메뉴 (접기/펼치기) -->
-    <button class="toggle-btn" onclick="toggleCollapsible('settingsContent', 'settingsArrow')">
-        <span>⚙️ 탐험대 설정 및 재시작</span>
-        <span id="settingsArrow">▼</span>
-    </button>
-    <div id="settingsContent" class="collapsible-content">
-        <div class="settings-item">
-            <span>🌙 다크 모드</span>
-            <button class="action-btn" id="themeToggleBtn" onclick="toggleDarkMode()">설정</button>
-        </div>
-        <div class="settings-item">
-            <span>🔄 탐험 초기화 (Beta)</span>
-            <button class="action-btn reset-btn" onclick="manualReset()">재시작</button>
+    <!-- 왼쪽 위 설정 버튼 및 팝업 메뉴 -->
+    <div class="top-left-settings">
+        <button class="icon-btn" onclick="toggleSettingsMenu()">⚙️</button>
+        <div id="settingsDropdown" class="settings-dropdown">
+            <div class="settings-item">
+                <span>🌙 다크 모드</span>
+                <button class="action-btn" id="themeToggleBtn" onclick="toggleDarkMode()">설정</button>
+            </div>
+            <div class="settings-item">
+                <span>🔄 초기화</span>
+                <button class="action-btn reset-btn" onclick="manualReset()">재시작</button>
+            </div>
         </div>
     </div>
 
@@ -205,14 +280,9 @@
         <span class="star" id="star3">★</span>
     </div>
 
-    <!-- 식물 도감 영역 (접기/펼치기) -->
-    <button class="toggle-btn" onclick="toggleCollapsible('pokedexContent', 'pokedexArrow')">
-        <span>📖 수집한 식물 도감 (<span id="bookCount">0</span> / 3)</span>
-        <span id="pokedexArrow">▼</span>
-    </button>
-    <div id="pokedexContent" class="collapsible-content">
-        <div class="pokedex-grid" id="pokedexGrid">
-        </div>
+    <div id="customMessageBox" class="custom-message-box">
+        어린이 식물 탐험대 여러분. 식물 사진을 찍고
+        업로드 하여 퀴즈까지 맞추어 별을 모아보자.
     </div>
 
     <!-- 탐험 카메라 업로드 -->
@@ -240,14 +310,40 @@
     <div id="completeBox">
         <div class="complete-title">🏆 미션 완수! 🏆</div>
         <div style="font-size: 1.1rem; color: var(--title-color); font-weight: bold;">
-            별 3개를 모두 모았어요!<br>오늘의 위대한 식물 탐험가! 👏✨
+            별 3개를 모두 모았습니다<br>다음 탐험을 준비하세요.
         </div>
         <div class="timer-text" id="resetTimer">⏳ 다음 탐험까지 남은 시간: --분 --초</div>
     </div>
 </div>
 
+<!-- 오른쪽 아래 고정 도감 버튼 -->
+<div class="bottom-right-pokedex">
+    <button class="pokedex-fab-btn" onclick="openPokedexModal()">📖 도감 (<span id="bookCount">0</span>/3)</button>
+</div>
+
+<!-- 도감 모달 팝업 -->
+<div id="pokedexModal" class="pokedex-modal">
+    <div class="pokedex-modal-content">
+        <button class="pokedex-modal-close" onclick="closePokedexModal()">✖</button>
+        <h2 style="color: var(--title-color); margin-top: 0;">📖 수집한 식물 도감</h2>
+        <div class="pokedex-grid" id="pokedexGrid">
+        </div>
+    </div>
+</div>
+
 <script>
     const PLANT_ID_API_KEY = "693ZjbtN2eKVVZxShf5kwx49yMNnm5kpoW0pcrzwMcemhrvWpI"; 
+
+    // 오디오 객체
+    const correctAudio = new Audio('answer.mp3');
+    const wrongAudio = new Audio('wrong.mp3');
+
+    function playSound(audio) {
+        audio.currentTime = 0;
+        audio.play().catch(error => {
+            console.log("음성 재생 실패 (파일 경로 확인 또는 사용자 상호작용 필요):", error);
+        });
+    }
 
     const cameraInput = document.getElementById('cameraInput');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -269,7 +365,7 @@
     let foundPlants = new Set();
     let collectedList = [];
 
-    const RESET_TIME_MS = 60 * 60 * 1000; // 1시간
+    const RESET_TIME_MS = 60 * 60 * 1000; // 1시간 (밀리세컨 단위)
     let timerInterval = null;
 
     let currentPlant = "";
@@ -278,21 +374,30 @@
     let isAnswering = false;
     let loadingInterval = null;
 
-    // 접기/펼치기 토글 함수
-    function toggleCollapsible(contentId, arrowId) {
-        const content = document.getElementById(contentId);
-        const arrow = document.getElementById(arrowId);
-        
-        if (content.style.display === 'block') {
-            content.style.display = 'none';
-            arrow.innerText = '▼';
-        } else {
-            content.style.display = 'block';
-            arrow.innerText = '▲';
-        }
+    // 설정 토글
+    function toggleSettingsMenu() {
+        const dropdown = document.getElementById('settingsDropdown');
+        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
     }
 
-    // 다크 모드 
+    // 외부 클릭 시 설정 닫기
+    window.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('settingsDropdown');
+        const settingsBtn = document.querySelector('.top-left-settings .icon-btn');
+        if (dropdown && !dropdown.contains(e.target) && !settingsBtn.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // 도감 토글
+    function openPokedexModal() {
+        document.getElementById('pokedexModal').style.display = 'flex';
+    }
+
+    function closePokedexModal() {
+        document.getElementById('pokedexModal').style.display = 'none';
+    }
+
     function initTheme() {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -313,7 +418,6 @@
 
     initTheme();
 
-    // 데이터 불러오기 / 타이머 처리
     function loadSavedState() {
         const completedTime = localStorage.getItem('completedTime');
         const now = Date.now();
@@ -377,9 +481,10 @@
     }
 
     function manualReset() {
-        if (confirm("탐험 기록과 도감을 모두 초기화하고 다시 시작?")) {
+        if (confirm("탐험 기록과 도감을 모두 초기화하고 다시 시작할까요?")) {
             clearSavedData();
-            alert(" 탐험 데이터 초기화. 새로운 탐험을 시작하시오.");
+            alert("탐험 데이터가 초기화되었습니다. 새로운 탐험을 시작하세요.");
+            toggleSettingsMenu();
         }
     }
 
@@ -394,7 +499,7 @@
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 clearSavedData();
-                alert("⏰ 1시간이 지나 새로운 탐험을 시작할 수 있습니다!");
+                alert("⏰ 1시간이 지나 새로운 탐험을 시작할 수 있습니다.");
                 return;
             }
 
@@ -410,13 +515,12 @@
     function showCompleteUI(completedTime) {
         completeBox.style.display = 'block';
         uploadBtn.classList.add('disabled');
-        uploadBtn.innerText = "🔒 오늘 탐험 완료.";
+        uploadBtn.innerText = "🔒 오늘 탐험 완료";
         cameraInput.disabled = true;
-        result.innerHTML = "탐험 종료.";
+        result.innerHTML = "오늘의 탐험을 마쳤습니다.";
         startResetTimer(completedTime);
     }
 
-    // 번역 사전
     const plantDictionary = {
         "dandelion": "민들레", "taraxacum": "민들레", 
         "clover": "토끼풀(클로버)", "trifolium": "토끼풀",
@@ -432,16 +536,16 @@
     const quizDatabase = {
         "장미": { q: "❓ 장미는 빨간색 꽃인가?", ans: "O" },
         "선인장": { q: "❓ 선인장 가시를 만지면 아픈가?", ans: "O" },
-        "해바라기": { q: "❓ 해바라기는 햇빛을 좋아하나?", ans: "O" },
+        "해바라기": { q: "❓ 해바라기는 햇빛을 좋아하는가?", ans: "O" },
         "몬스테라": { q: "❓ 몬스테라 잎에는 구멍이 뚫려 있는가?", ans: "O" },
         "민들레": { q: "❓ 민들레 씨앗은 물속에서 날아가는가?", ans: "X" },
-        "소나무": { q: "❓ 소나무 잎은 동글동글 부드러운가?", ans: "X" }
+        "소나무": { q: "❓ 소나무 잎은 부드러운가?", ans: "X" }
     };
     
     const randomQuestions = [
-        { q: "❓ 이 식물 친구도 햇빛을 필요로 하는가?", ans: "O" },
-        { q: "❓ 이 식물 친구는 과자를 먹는가?", ans: "X" },
-        { q: "❓ 이 식물 친구는 물을 필요로 하는가?", ans: "O" }
+        { q: "❓ 이 식물 친구도 햇빛을 필요로 할까요?", ans: "O" },
+        { q: "❓ 이 식물 친구는 과자를 먹을까요?", ans: "X" },
+        { q: "❓ 이 식물 친구는 물을 필요로 할까요?", ans: "O" }
     ];
 
     loadSavedState();
@@ -497,11 +601,11 @@
 
     function startLoadingAnimation() {
         let dotCount = 1;
-        result.innerHTML = "식물 인식중.";
+        result.innerHTML = "식물 인식 중.";
         if (loadingInterval) clearInterval(loadingInterval);
         loadingInterval = setInterval(() => {
             dotCount = (dotCount % 3) + 1;
-            result.innerHTML = `식물 인식중${".".repeat(dotCount)}`;
+            result.innerHTML = `식물 인식 중${".".repeat(dotCount)}`;
         }, 700);
     }
 
@@ -549,7 +653,7 @@
             stopLoadingAnimation();
 
             if (!response.ok) {
-                result.innerHTML = `❌ 식물 인식 실패 (코드: ${response.status})`;
+                result.innerHTML = `식물 인식 실패 (코드: ${response.status})`;
                 return;
             }
 
@@ -559,19 +663,18 @@
                 const topMatch = data.result.classification.suggestions[0];
                 currentPlant = translatePlantName(topMatch.name);
 
-                // 🔥 이미 수집한 식물인 경우 중복 방지
                 if (foundPlants.has(currentPlant)) {
-                    result.innerHTML = `🌿 <b>${currentPlant}</b> 발견.<br><span style="color:#e65100; font-size:1rem;">이미 획득한 식물.</span>`;
+                    result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!<br><span style="color:#e65100; font-size:1rem;">이미 수집한 식물입니다.</span>`;
                     quizBox.style.display = 'none';
                 } else {
-                    result.innerHTML = `🌿 <b>${currentPlant}</b> 식물 인식.<br><span style="color:#2e7d32; font-weight:bold;">⭐ O, X 퀴즈를 맞춰 별을 획득하여라.</span>`;
+                    result.innerHTML = `🌿 <b>${currentPlant}</b> 식물 인식 완료!<br><span style="color:#2e7d32; font-weight:bold;">⭐ O, X 퀴즈를 맞추고 별을 획득하세요!</span>`;
                     
                     currentQuiz = quizDatabase[currentPlant] || getRandomQuiz();
                     quizQuestion.innerHTML = `<b>[${currentPlant} 퀴즈]</b><br>${currentQuiz.q}`;
                     quizBox.style.display = 'block';
                 }
             } else {
-                result.innerHTML = "❌ 식물을 찾지 못했다. 사진을 다시 찍어라.";
+                result.innerHTML = "❌ 식물을 찾지 못했습니다. 사진을 다시 찍어주세요.";
             }
 
         } catch (error) {
@@ -581,6 +684,7 @@
         }
     });
 
+    // OX 퀴즈 검사
     function checkOX(userChoice) {
         if (isAnswering || starCount >= MAX_STARS || !currentQuiz) return;
 
@@ -588,6 +692,9 @@
             isAnswering = true;
             btnO.disabled = true;
             btnX.disabled = true;
+
+            // 정답 음성
+            playSound(correctAudio);
 
             foundPlants.add(currentPlant);
             starCount++;
@@ -606,7 +713,7 @@
             }
 
             quizFeedback.style.color = "#4caf50";
-            quizFeedback.innerHTML = "🎉 정답.";
+            quizFeedback.innerHTML = "정답.";
 
             setTimeout(() => {
                 quizBox.style.display = 'none';
@@ -619,8 +726,11 @@
             }, 1800);
 
         } else {
+            // 오답 음성
+            playSound(wrongAudio);
+
             quizFeedback.style.color = "#f44336";
-            quizFeedback.innerHTML = "❌ 오답.";
+            quizFeedback.innerHTML = "오답.";
         }
     }
 </script>
