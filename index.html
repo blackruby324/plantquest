@@ -133,6 +133,12 @@
         .action-btn.reset-btn {
             background: #ff9800;
         }
+        .action-btn.info-btn {
+            background: #4caf50;
+        }
+        .action-btn.guide-btn {
+            background: #0288d1;
+        }
 
         .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 25px; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
@@ -183,7 +189,7 @@
             margin-top: 15px; 
             border-radius: 12px; 
             display: none; 
-                }
+        }
         
         #result { 
             margin-top: 15px; 
@@ -191,7 +197,7 @@
             font-weight: bold; 
             color: var(--title-color); 
             line-height: 1.5; 
-                }
+        }
         
         #missionBox { 
             display: none; 
@@ -200,7 +206,7 @@
             background: var(--mission-bg); 
             border: 3px dashed var(--mission-border); 
             border-radius: 18px; 
-                    }
+        }
         .mission-title { 
             font-size: 1.3rem; 
             color: var(--mission-title); 
@@ -208,7 +214,7 @@
             font-weight: bold; 
             word-break: keep-all; 
             line-height: 1.4; 
-                }
+        }
 
         input[type="file"] { display: none; }
         .btn { 
@@ -223,7 +229,7 @@
             margin-top: 10px; 
             font-weight: bold; 
             box-shadow: 0 5px #2e7d32; 
-                }
+        }
         .btn:active { box-shadow: 0 0 #2e7d32; transform: translateY(5px); }
         .btn.disabled { background: #888 !important; box-shadow: none !important; cursor: not-allowed !important; }
         .confirm-btn {
@@ -237,11 +243,11 @@
             cursor: pointer;
             box-shadow: 0 4px #e65100;
             margin-top: 10px;
-                }
+        }
         .confirm-btn:active {
             box-shadow: 0 0 #e65100;
             transform: translateY(4px);
-                }
+        }
 
         #completeBox { 
             display: none; 
@@ -250,19 +256,19 @@
             background: var(--complete-bg); 
             border: 3px solid var(--complete-border); 
             border-radius: 18px; 
-                    }
+        }
         .complete-title { 
             font-size: 1.5rem; 
             color: var(--title-color); 
             font-weight: bold; 
             margin-bottom: 10px; 
-                        }
+        }
         .timer-text { 
             margin-top: 10px; 
             font-size: 1rem; 
             color: #e65100; 
             font-weight: bold; 
-                    }
+        }
 
         .floating-book-btn {
             position: fixed;
@@ -279,10 +285,10 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: transform 0.2s;
-                    }
+        }
         .floating-book-btn:active { transform: scale(0.95); }
 
-        .book-modal {
+        .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -290,26 +296,47 @@
             z-index: 100;
             justify-content: center;
             align-items: center;
-                    }
+        }
 
-        .book-modal-content {
+        .modal-content {
             background: var(--box-bg);
             padding: 20px;
             border-radius: 20px;
             width: 88%;
-            max-width: 360px;
+            max-width: 380px;
             position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-                    }
+            text-align: left;
+        }
 
-        .close-book-btn {
+        .close-btn {
             position: absolute;
             top: 10px; right: 15px;
             font-size: 2rem;
             font-weight: bold;
             cursor: pointer;
             color: var(--text-color);
-                    }
+        }
+
+        .guide-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            padding-right: 5px;
+        }
+
+        .guide-step {
+            background: rgba(0, 0, 0, 0.04);
+            border-left: 4px solid var(--title-color);
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        body.dark-mode .guide-step {
+            background: rgba(255, 255, 255, 0.05);
+        }
 
         .pokemon-card {
             background: linear-gradient(135deg, #fffde7, #fff9c4);
@@ -321,13 +348,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-                    }
+        }
 
         body.dark-mode .pokemon-card {
             background: linear-gradient(135deg, #2a281e, #1f1d14);
             border-color: #fbc02d;
             color: #fff;
-                    }
+        }
 
         .card-header {
             font-size: 1.3rem;
@@ -337,7 +364,8 @@
             border-bottom: 2px solid #fbc02d;
             width: 100%;
             padding-bottom: 4px;
-                    }
+            text-align: center;
+        }
 
         body.dark-mode .card-header { color: #ffb74d; }
 
@@ -352,7 +380,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-                    }
+        }
 
         .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -365,7 +393,7 @@
             box-sizing: border-box;
             min-height: 70px;
             text-align: left;
-                    }
+        }
 
         body.dark-mode .card-body { background: rgba(0,0,0,0.4); }
 
@@ -381,7 +409,7 @@
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-                    }
+        }
     </style>
 </head>
 <body>
@@ -392,8 +420,16 @@
         <button class="icon-btn" onclick="toggleSettingsMenu()">⚙️</button>
         <div id="settingsDropdown" class="settings-dropdown">
             <div class="settings-item">
+                <span>📖 사용설명서</span>
+                <button class="action-btn guide-btn" onclick="openGuide()">보기</button>
+            </div>
+            <div class="settings-item">
                 <span>🌙 다크 모드</span>
                 <button class="action-btn" id="themeToggleBtn" onclick="toggleDarkMode()">설정</button>
+            </div>
+            <div class="settings-item">
+                <span>🔍 식물 목록</span>
+                <button class="action-btn info-btn" onclick="showPlantList()">확인</button>
             </div>
             <div class="settings-item">
                 <span>🔄 초기화</span>
@@ -408,7 +444,6 @@
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
-    <!-- 별 ui 추후 뱃지로 변경시 삭제 -->
     <div class="stars-wrapper">
         <div class="star-box">
             <span class="big-star" id="star1">★</span>
@@ -432,7 +467,6 @@
         </div>
     </div>
 
-    <!-- 사진 버튼 -->
     <div id="uploadArea">
         <label for="cameraInput" id="uploadBtn" class="btn">📷 식물 올리기 / 찍기</label>
         <input type="file" id="cameraInput" accept="image/*">
@@ -441,7 +475,6 @@
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
-    <!-- 미션 상자 -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
         <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
@@ -458,10 +491,39 @@
 
 <button class="floating-book-btn" onclick="openBook()">📖 탐험 도감</button>
 
-<div id="bookModal" class="book-modal">
-    <div class="book-modal-content">
-        <span class="close-book-btn" onclick="closeBook()">&times;</span>
-        <h2 style="margin: 0 0 15px 0; color: var(--title-color);">🌱 나의 탐험 도감 🌱</h2>
+<div id="guideModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeGuide()">&times;</span>
+        <h2 style="margin: 0 0 15px 0; color: var(--title-color); text-align: center;">📜 숲프렌즈 이용안내</h2>
+        <div class="guide-body">
+            <div class="guide-step">
+                <b>1. 📷 식물 사진 찍기</b><br>
+                주변 숲이나 길가에서 지정된 10가지 식물 중 하나를 카메라로 촬영해보세요.
+            </div>
+            <div class="guide-step">
+                <b>2. 🎯 미션 완료하기</b><br>
+                AI가 식물을 인식하면 특별한 탐험 미션이 나와요! 미션을 완료하고 버튼을 누르면 **작은 별(★)**을 받습니다.
+            </div>
+            <div class="guide-step">
+                <b>3. 🌟 큰 별 모으기</b><br>
+                작은 별 2개를 모을 때마다 **큰 별(★ 1개)**이 완성됩니다! 총 5개의 큰 별을 모아보세요.
+            </div>
+            <div class="guide-step">
+                <b>4. ⏳ 24시간 휴식 시간</b><br>
+                큰 별 1개를 얻으면 자연을 보호하기 위해 24시간 동안 휴식 타이머가 작동해요.
+            </div>
+            <div class="guide-step">
+                <b>5. 📖 나의 탐험 도감</b><br>
+                수집한 식물은 도감에 카드 형태로 기록되어 언제든지 설명을 확인할 수 있어요!
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="bookModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeBook()">&times;</span>
+        <h2 style="margin: 0 0 15px 0; color: var(--title-color); text-align: center;">🌱 나의 탐험 도감 🌱</h2>
         
         <div class="pokemon-card">
             <div class="card-header" id="cardTitle">식물 이름</div>
@@ -535,7 +597,7 @@
         "강아지풀": "강아지풀을 살짝 흔들어 꼬리처럼 움직여보기!",
         "코스모스": "코스모스의 꽃잎 개수를 세어보기!",
         "떡갈나무잎": "떡갈나무잎으로 내 얼굴 모양 꾸며보기!"
-                };
+    };
 
     const plantDescriptions = {
         "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 솔방울 안에는 소나무가 새롭게 자랄 수 있는 작은 씨앗이 들어 있답니다. 🌲",
@@ -548,7 +610,7 @@
         "강아지풀": "강아지풀은 길쭉한 줄기 끝에 강아지 꼬리처럼 보이는 작은 꽃이삭이 달린 풀이에요. 손으로 살짝 만지면 보들보들한 느낌이 나고, 가을이 되면 노란빛이나 갈색으로 변한답니다. 🌾",
         "코스모스": "코스모스는 가을에 많이 볼 수 있는 예쁜 꽃으로, 분홍색·하얀색·보라색 등 다양한 색깔이 있어요. 가느다란 줄기에 꽃이 피며, 바람이 불면 살랑살랑 흔들리는 모습이 아름답답니다. 🌸",
         "떡갈나무잎": "떡잎은 씨앗에서 싹이 나올 때 처음 나오는 잎으로, 어린 식물이 자라는 데 필요한 영양분을 담고 있어요. 식물이 자라면서 진짜 잎이 나오면 떡잎은 점점 작아지고 떨어지기도 한답니다. 🌱"
-                };
+    };
 
     let collectedCards = []; 
     let currentCardIndex = 0;
@@ -556,14 +618,24 @@
     function toggleSettingsMenu() {
         const dropdown = document.getElementById('settingsDropdown');
         dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-                }
+    }
+
+    /* 사용설명서 열기 / 닫기 */
+    function openGuide() {
+        document.getElementById('guideModal').style.display = 'flex';
+        toggleSettingsMenu();
+    }
+
+    function closeGuide() {
+        document.getElementById('guideModal').style.display = 'none';
+    }
 
     window.addEventListener('click', function(e) {
         const dropdown = document.getElementById('settingsDropdown');
         const settingsBtn = document.querySelector('.top-left-settings .icon-btn');
         if (dropdown && !dropdown.contains(e.target) && !settingsBtn.contains(e.target)) {
             dropdown.style.display = 'none';
-                }
+        }
     });
 
     function initTheme() {
@@ -571,7 +643,7 @@
         if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.body.classList.add('dark-mode');
             themeToggleBtn.innerText = "라이트모드";
-                } 
+        } 
         
         else {
             document.body.classList.remove('dark-mode');
@@ -584,6 +656,12 @@
         const isDark = document.body.classList.contains('dark-mode');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         themeToggleBtn.innerText = isDark ? "라이트모드" : "다크모드";
+    }
+
+    function showPlantList() {
+        const plantKeys = Object.keys(plantMissions);
+        alert("🌱 인식 가능한 식물 목록 (10종) 🌱\n\n" + plantKeys.join(", "));
+        toggleSettingsMenu();
     }
 
     initTheme();
@@ -600,19 +678,19 @@
                 bigStar.classList.add('filled');
                 dot1.classList.add('active');
                 dot2.classList.add('active');
-                            } 
+            } 
             
             else if (plantCount === requiredPlantsForGroup - 1) {
                 bigStar.classList.remove('filled');
                 dot1.classList.add('active');
                 dot2.classList.remove('active');
-                        } 
+            } 
             
             else {
                 bigStar.classList.remove('filled');
                 dot1.classList.remove('active');
                 dot2.classList.remove('active');
-                    }
+            }
         }
     }
 
@@ -620,11 +698,10 @@
         const lockStartTime = localStorage.getItem('lockStartTime');
         const now = Date.now();
 
-        // 쿨타임 해제
         if (lockStartTime && (now - parseInt(lockStartTime)) >= RESET_TIME_MS) {
             localStorage.removeItem('lockStartTime');
             unlockUploadUI();
-                }
+        }
 
         const savedPlantCount = localStorage.getItem('plantCount');
         const savedPlants = localStorage.getItem('foundPlants');
@@ -639,7 +716,7 @@
         const currentLockTime = localStorage.getItem('lockStartTime');
         if (currentLockTime) {
             showLockUI(parseInt(currentLockTime));
-                }
+        }
     }
 
     function saveData() {
@@ -672,10 +749,9 @@
             clearSavedData();
             alert("탐험 데이터가 초기화되었습니다.");
             toggleSettingsMenu();
-                }
+        }
     }
 
-    // 쿨타임 동작
     function startResetTimer(startTime) {
         if (timerInterval) clearInterval(timerInterval);
 
@@ -690,7 +766,7 @@
                 unlockUploadUI();
                 alert("⏰ 24시간이 지나 다음 큰 별에 도전할 수 있습니다!");
                 return;
-                    }
+            }
 
             const hours = Math.floor(remaining / (1000 * 60 * 60));
             const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -712,12 +788,12 @@
         if (plantCount >= MAX_PLANTS) {
             completeTitle.innerText = "🏆 모든 큰 별 완수! 🏆";
             completeMsg.innerHTML = "큰 별 5개를 모두 모으셨습니다!<br>축하합니다, 최고의 식물 탐험가예요!";
-                    } 
+        } 
         
         else {
             completeTitle.innerText = "🌟 큰 별 획득! 휴식 중 🌟";
             completeMsg.innerHTML = `큰 별 ${Math.floor(plantCount / 2)}개를 모았습니다!<br>24시간 후 다음 큰 별 도전에 참여해보세요.`;
-                }
+        }
 
         startResetTimer(startTime);
     }
@@ -728,7 +804,7 @@
         uploadBtn.innerText = "📷 식물 올리기 / 찍기";
         cameraInput.disabled = false;
         if (timerInterval) clearInterval(timerInterval);
-            }
+    }
 
     loadSavedState();
 
@@ -737,7 +813,7 @@
             const plantKeys = Object.keys(plantMissions);
             const randomIndex = Math.floor(Math.random() * (plantKeys.length + 1));
             return plantKeys[randomIndex] ? { className: plantKeys[randomIndex], probability: 0.85 } : { className: "unknown", probability: 0.3 };
-                }
+        }
 
         const prediction = await model.predict(imageElement);
         prediction.sort((a, b) => b.probability - a.probability);
@@ -770,7 +846,7 @@
             if (plantMissions.hasOwnProperty(plantName) && confidence >= 0.70) {
                 if (foundPlants.has(plantName)) {
                     result.innerHTML = `🌿 <b>${plantName}</b> 발견!<br><span style="color:#e65100; font-size:1rem;">이미 별을 모은 항목입니다. 다른 식물을 찾아보세요!</span>`;
-                                } 
+                } 
                 
                 else {
                     currentPlant = plantName;
@@ -778,13 +854,13 @@
                     const mission = plantMissions[currentPlant];
                     missionText.innerHTML = `<b>🎯 [탐험 미션]</b><br>${mission}`;
                     missionBox.style.display = 'block';
-                            }
+                }
             } 
             
             else {
                 currentPlant = "";
                 result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 10가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
-                    }
+            }
             
             cameraInput.value = "";
         };
@@ -802,11 +878,11 @@
         const existingIndex = collectedCards.findIndex(item => item.name === currentPlant);
         if (existingIndex >= 0) {
             collectedCards[existingIndex].img = preview.src;
-                        } 
+        } 
         
         else {
             collectedCards.push({ name: currentPlant, img: preview.src });
-                    }
+        }
 
         plantCount++;
         renderStars();
@@ -826,7 +902,7 @@
         
         else {
             result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
-                }
+        }
 
         currentPlant = ""; 
     }
