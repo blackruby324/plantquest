@@ -9,9 +9,8 @@
     <meta property="og:title" content="🌱 어린이 식물 탐험대 🌱">
     <meta property="og:description" content="식물을 찾고 미션을 수행해 별을 모아보세요!">
     <meta property="og:image" content="some.png">
-    <meta property="og:image:width" content="800">
-    <meta property="og:image:height" content="400">
 
+    <!-- Teachable Machine 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
@@ -76,7 +75,6 @@
             transition: background-color 0.3s;
         }
 
-        /* 왼쪽 위 설정 버튼 및 드롭다운 */
         .top-left-settings {
             position: absolute;
             top: 15px;
@@ -139,25 +137,50 @@
 
         .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 25px; }
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
-        .character-img { width: 160px; height: 160px; object-fit: contain; }
+        .character-img { width: 140px; height: 140px; object-fit: contain; }
         
-        .stars-container { font-size: 3rem; min-height: 50px; margin-bottom: 10px; word-break: break-all; line-height: 1.2; letter-spacing: 5px; }
-        .star { color: var(--star-empty); transition: color 0.5s ease, transform 0.3s ease; display: inline-block; }
-        .star.filled { color: #ffca28; text-shadow: 0 0 10px #ffe082; transform: scale(1.15); }
+        /* 🌟 별 5개 슬롯 & 작은 별 2개 진행 표시 UI */
+        .stars-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
 
-        .custom-message-box {
-            margin: 15px 0;
-            padding: 10px;
-            font-size: 1.05rem;
-            color: var(--text-color);
-            min-height: 24px;
-            white-space: pre-line;
+        .star-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .big-star {
+            font-size: 2.5rem;
+            color: var(--star-empty);
+            transition: color 0.5s ease, transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .big-star.filled {
+            color: #ffca28;
+            text-shadow: 0 0 10px #ffe082;
+            transform: scale(1.15);
+        }
+
+        .sub-dots {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .sub-dots span.active {
+            color: #ffb74d;
         }
 
         #preview { width: 100%; max-height: 250px; object-fit: cover; margin-top: 15px; border-radius: 12px; display: none; }
-        #result { margin-top: 15px; font-size: 1.25rem; font-weight: bold; color: var(--title-color); line-height: 1.5; }
+        #result { margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: var(--title-color); line-height: 1.5; }
         
-        /* 미션 상자 */
         #missionBox { 
             display: none; 
             margin-top: 20px; 
@@ -213,7 +236,6 @@
         .complete-title { font-size: 1.6rem; color: var(--title-color); font-weight: bold; margin-bottom: 10px; }
         .timer-text { margin-top: 10px; font-size: 1rem; color: #e65100; font-weight: bold; }
 
-        /* 오른쪽 아래 플로팅 도감 버튼 */
         .floating-book-btn {
             position: fixed;
             bottom: 25px;
@@ -230,11 +252,8 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: transform 0.2s;
         }
-        .floating-book-btn:active {
-            transform: scale(0.95);
-        }
+        .floating-book-btn:active { transform: scale(0.95); }
 
-        /* 포켓몬 카드 도감 모달 */
         .book-modal {
             display: none;
             position: fixed;
@@ -307,11 +326,7 @@
             align-items: center;
         }
 
-        .card-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
         .card-body {
             width: 100%;
@@ -326,25 +341,10 @@
 
         body.dark-mode .card-body { background: rgba(0,0,0,0.4); }
 
-        .card-desc {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            word-break: keep-all;
-        }
+        .card-desc { font-size: 0.9rem; line-height: 1.4; word-break: keep-all; }
+        .card-footer { margin-top: 8px; font-size: 0.85rem; font-weight: bold; color: #757575; }
 
-        .card-footer {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #757575;
-        }
-
-        .card-nav-btns {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-
+        .card-nav-btns { display: flex; justify-content: space-between; margin-top: 15px; }
         .nav-btn {
             background: #2e7d32;
             color: white;
@@ -359,7 +359,7 @@
 <body>
 
 <div class="box">
-    <!-- 왼쪽 위 설정 버튼 및 팝업 메뉴 -->
+    <!-- 왼쪽 위 설정 메뉴 -->
     <div class="top-left-settings">
         <button class="icon-btn" onclick="toggleSettingsMenu()">⚙️</button>
         <div id="settingsDropdown" class="settings-dropdown">
@@ -380,18 +380,36 @@
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
-    <!-- 별 슬롯 -->
-    <div id="starsContainer" class="stars-container">
-        <span class="star" id="star1">★</span>
-        <span class="star" id="star2">★</span>
-        <span class="star" id="star3">★</span>
+    <!-- 🌟 큰 별 5개 + 작은 별(2개 세트) UI -->
+    <div class="stars-wrapper">
+        <!-- 1번 별 -->
+        <div class="star-box">
+            <span class="big-star" id="star1">★</span>
+            <div class="sub-dots"><span id="dot1_1">★</span><span id="dot1_2">★</span></div>
+        </div>
+        <!-- 2번 별 -->
+        <div class="star-box">
+            <span class="big-star" id="star2">★</span>
+            <div class="sub-dots"><span id="dot2_1">★</span><span id="dot2_2">★</span></div>
+        </div>
+        <!-- 3번 별 -->
+        <div class="star-box">
+            <span class="big-star" id="star3">★</span>
+            <div class="sub-dots"><span id="dot3_1">★</span><span id="dot3_2">★</span></div>
+        </div>
+        <!-- 4번 별 -->
+        <div class="star-box">
+            <span class="big-star" id="star4">★</span>
+            <div class="sub-dots"><span id="dot4_1">★</span><span id="dot4_2">★</span></div>
+        </div>
+        <!-- 5번 별 -->
+        <div class="star-box">
+            <span class="big-star" id="star5">★</span>
+            <div class="sub-dots"><span id="dot5_1">★</span><span id="dot5_2">★</span></div>
+        </div>
     </div>
 
-    <div id="customMessageBox" class="custom-message-box">
-        <!-- 커스텀 멘트 위치 -->
-    </div>
-
-    <!-- 식물 카메라인풋 -->
+    <!-- 식물 올리기 버튼 -->
     <div id="uploadArea">
         <label for="cameraInput" id="uploadBtn" class="btn">📷 식물 올리기 / 찍기</label>
         <input type="file" id="cameraInput" accept="image/*">
@@ -400,26 +418,26 @@
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
-    <!-- [미션칸] -->
+    <!-- [미션 상자] -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
-        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (별 획득!)</button>
+        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
     </div>
 
     <!-- 미션 완수 시 -->
     <div id="completeBox">
-        <div class="complete-title">🏆 미션 완수! 🏆</div>
+        <div class="complete-title">🏆 오늘 탐험 완수! 🏆</div>
         <div style="font-size: 1.1rem; color: var(--title-color); font-weight: bold;">
-            별 3개를 모두 모았습니다<br>다음 탐험을 준비하세요.
+            큰 별 5개를 모두 모았습니다!<br>다음 탐험을 준비하세요.
         </div>
         <div class="timer-text" id="resetTimer">⏳ 다음 탐험까지 남은 시간: --시간 --분 --초</div>
     </div>
 </div>
 
-<!-- 오른쪽 아래 고정 도감 버튼 -->
+<!-- 플로팅 도감 버튼 -->
 <button class="floating-book-btn" onclick="openBook()">📖 탐험 도감</button>
 
-<!-- 포켓몬 카드 형태 도감 모달 -->
+<!-- 카드 도감 모달 -->
 <div id="bookModal" class="book-modal">
     <div class="book-modal-content">
         <span class="close-book-btn" onclick="closeBook()">&times;</span>
@@ -433,7 +451,7 @@
             <div class="card-body">
                 <div class="card-desc" id="cardDesc">설명 공간입니다.</div>
             </div>
-            <div class="card-footer" id="cardPageIndicator">1 / 12</div>
+            <div class="card-footer" id="cardPageIndicator">1 / 10</div>
         </div>
 
         <div class="card-nav-btns">
@@ -444,15 +462,11 @@
 </div>
 
 <script>
-    // -----------------------------------------------------------
-    // 🔗 Teachable Machine 모델 URL (생성 후 아래 링크 수정)
-    // -----------------------------------------------------------
-    const URL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_URL/";
+    const URL = "https://teachablemachine.withgoogle.com/models/ebQ09FdjZ/";
     let model, maxPredictions;
 
-    // AI 모델 불러오기
     async function initModel() {
-        if (URL.includes("YOUR_MODEL_URL")) return; // 주소가 설정되지 않았으면 스킵
+        if (URL.includes("YOUR_MODEL_URL")) return;
         const modelURL = URL + "model.json";
         const metadataURL = URL + "metadata.json";
         model = await tmImage.load(modelURL, metadataURL);
@@ -460,14 +474,10 @@
     }
     initModel();
 
-    // 오디오 파일
     const correctAudio = new Audio('answer.mp3');
-
     function playSound(audio) {
         audio.currentTime = 0;
-        audio.play().catch(error => {
-            console.log("음성 재생 실패:", error);
-        });
+        audio.play().catch(e => console.log("음성 재생 오류:", e));
     }
 
     const cameraInput = document.getElementById('cameraInput');
@@ -482,17 +492,16 @@
 
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    let starCount = 0;
-    const MAX_STARS = 3;
+    // 🌟 핵심 로직 변수 (총 10개 식물 수집 = 큰 별 5개)
+    let plantCount = 0;        // 수집한 총 식물 개수 (0~10)
+    const MAX_PLANTS = 10;     // 큰 별 5개 x 식물 2개
     let foundPlants = new Set();
 
-    // ⏱️ 제한 시간: 24시간
-    const RESET_TIME_MS = 24 * 60 * 60 * 1000;
+    const RESET_TIME_MS = 24 * 60 * 60 * 1000; // 24시간
     let timerInterval = null;
 
     let currentPlant = "";
 
-    // [미션칸] 12가지 지정 식물별 미션 문구
     const plantMissions = {
         "솔방울": "솔방울로 동그라미 만들기!",
         "밤": "밤송이나 밤 알맹이 찾아보기!",
@@ -503,12 +512,9 @@
         "소나무": "소나무 잎 세어보기!",
         "강아지풀": "강아지풀로 간지럼 피우기!",
         "코스모스": "코스모스 꽃잎 색깔 관찰하기!",
-        "떡갈나무잎": "커다란 떡갈나무잎으로 얼굴 가리기!",
-        "국화": "국화꽃 냄새 맡아보기!",
-        "억새풀": "바람에 흔들리는 억새풀 흉내내기!"
+        "떡갈나무잎": "커다란 떡갈나무잎으로 얼굴 가리기!"
     };
 
-    // 12가지 식물별 카드 도감 설명
     const plantDescriptions = {
         "솔방울": "소나무의 열매예요! 날씨가 건조하면 비늘을 벌리고, 습하면 꽉 다무는 습성이 있어요.",
         "밤": "가시가 뾰족뾰족한 밤송이 속에 들어있는 맛있는 가을 열매예요.",
@@ -519,9 +525,7 @@
         "소나무": "사계절 내내 푸른 바늘 모양의 잎을 가지고 있는 나무예요.",
         "강아지풀": "강아지 꼬리를 닮아 보송보송하고 귀여운 들풀이에요.",
         "코스모스": "가을 바람에 하늘하늘 흔들리는 예쁜 꽃이에요.",
-        "떡갈나무잎": "잎이 아주 크고 넓어서 옛날에는 떡을 싸는 데 쓰기도 했어요.",
-        "국화": "가을에 향기로운 꽃을 피우는 가을의 대표적인 꽃이에요.",
-        "억새풀": "가을이 되면 은빛 억새 물결을 이루며 바람에 흔들리는 풀이에요."
+        "떡갈나무잎": "잎이 아주 크고 넓어서 옛날에는 떡을 싸는 데 쓰기도 했어요."
     };
 
     let collectedCards = []; 
@@ -560,6 +564,34 @@
 
     initTheme();
 
+    // 🌟 별 UI 렌더링 함수
+    function renderStars() {
+        for (let group = 1; group <= 5; group++) {
+            const bigStar = document.getElementById(`star${group}`);
+            const dot1 = document.getElementById(`dot${group}_1`);
+            const dot2 = document.getElementById(`dot${group}_2`);
+
+            const requiredPlantsForGroup = group * 2;
+
+            if (plantCount >= requiredPlantsForGroup) {
+                // 식물 2개 채움 ➔ 큰 별 완성!
+                bigStar.classList.add('filled');
+                dot1.classList.add('active');
+                dot2.classList.add('active');
+            } else if (plantCount === requiredPlantsForGroup - 1) {
+                // 식물 1개 채움 ➔ 작은 별 1개 활성화
+                bigStar.classList.remove('filled');
+                dot1.classList.add('active');
+                dot2.classList.remove('active');
+            } else {
+                // 0개
+                bigStar.classList.remove('filled');
+                dot1.classList.remove('active');
+                dot2.classList.remove('active');
+            }
+        }
+    }
+
     function loadSavedState() {
         const completedTime = localStorage.getItem('completedTime');
         const now = Date.now();
@@ -569,44 +601,38 @@
             return;
         }
 
-        const savedStars = localStorage.getItem('starCount');
+        const savedPlantCount = localStorage.getItem('plantCount');
         const savedPlants = localStorage.getItem('foundPlants');
         const savedCards = localStorage.getItem('collectedCards');
 
-        if (savedStars) starCount = parseInt(savedStars);
+        if (savedPlantCount) plantCount = parseInt(savedPlantCount);
         if (savedPlants) foundPlants = new Set(JSON.parse(savedPlants));
         if (savedCards) collectedCards = JSON.parse(savedCards);
 
-        for (let i = 1; i <= starCount; i++) {
-            const star = document.getElementById(`star${i}`);
-            if (star) star.classList.add('filled');
-        }
+        renderStars();
 
-        if (starCount >= MAX_STARS && completedTime) {
+        if (plantCount >= MAX_PLANTS && completedTime) {
             showCompleteUI(parseInt(completedTime));
         }
     }
 
     function saveData() {
-        localStorage.setItem('starCount', starCount);
+        localStorage.setItem('plantCount', plantCount);
         localStorage.setItem('foundPlants', JSON.stringify(Array.from(foundPlants)));
         localStorage.setItem('collectedCards', JSON.stringify(collectedCards));
     }
 
     function clearSavedData() {
-        localStorage.removeItem('starCount');
+        localStorage.removeItem('plantCount');
         localStorage.removeItem('foundPlants');
         localStorage.removeItem('completedTime');
         localStorage.removeItem('collectedCards');
 
-        starCount = 0;
+        plantCount = 0;
         foundPlants = new Set();
         collectedCards = [];
 
-        for (let i = 1; i <= MAX_STARS; i++) {
-            const star = document.getElementById(`star${i}`);
-            if (star) star.classList.remove('filled');
-        }
+        renderStars();
 
         completeBox.style.display = 'none';
         uploadBtn.classList.remove('disabled');
@@ -657,30 +683,26 @@
         uploadBtn.classList.add('disabled');
         uploadBtn.innerText = "🔒 오늘 탐험 완료";
         cameraInput.disabled = true;
-        result.innerHTML = "오늘의 탐험을 마쳤습니다.";
+        result.innerHTML = "오늘의 탐험을 성공적으로 마쳤습니다!";
         startResetTimer(completedTime);
     }
 
     loadSavedState();
 
-    // -----------------------------------------------------------
-    // 🔍 AI 이미지 식별 및 12종 검증/실패 처리 로직
-    // -----------------------------------------------------------
     async function classifyImage(imageElement) {
-        // 모델 연동 전 테스트용 임시 동작
         if (!model) {
             const plantKeys = Object.keys(plantMissions);
-            const randomIndex = Math.floor(Math.random() * (plantKeys.length + 1)); // 실패 경우 포함
+            const randomIndex = Math.floor(Math.random() * (plantKeys.length + 1));
             return plantKeys[randomIndex] ? { className: plantKeys[randomIndex], probability: 0.85 } : { className: "unknown", probability: 0.3 };
         }
 
         const prediction = await model.predict(imageElement);
         prediction.sort((a, b) => b.probability - a.probability);
-        return prediction[0]; // 가장 높게 추론된 결과 리턴
+        return prediction[0];
     }
 
     cameraInput.addEventListener('change', async function(e) {
-        if (starCount >= MAX_STARS) return;
+        if (plantCount >= MAX_PLANTS) return;
 
         const file = e.target.files[0];
         if (!file) return;
@@ -693,12 +715,10 @@
             preview.src = event.target.result;
             preview.style.display = 'block';
 
-            // AI 식별 수행
             const topPrediction = await classifyImage(preview);
             const plantName = topPrediction.className;
             const confidence = topPrediction.probability;
 
-            // 12가지 지정 식물인지 및 확신도(70% 이상) 검증
             if (plantMissions.hasOwnProperty(plantName) && confidence >= 0.70) {
                 currentPlant = plantName;
 
@@ -711,23 +731,21 @@
                     missionBox.style.display = 'block';
                 }
             } else {
-                // ❌ 12가지 식물이 아니거나 인식 확신도가 낮을 때 (인식 실패)
                 currentPlant = "";
-                result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 12가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
+                result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 10가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
             }
         };
         reader.readAsDataURL(file);
     });
 
-    // 미션 완료 및 카드 수집
+    // 🌟 미션 성공 시 별 업데이트
     function completeMission() {
-        if (starCount >= MAX_STARS || !currentPlant) return;
+        if (plantCount >= MAX_PLANTS || !currentPlant) return;
 
         playSound(correctAudio);
 
         foundPlants.add(currentPlant);
 
-        // 도감 카드 저장/업데이트
         const existingIndex = collectedCards.findIndex(item => item.name === currentPlant);
         if (existingIndex >= 0) {
             collectedCards[existingIndex].img = preview.src;
@@ -735,26 +753,28 @@
             collectedCards.push({ name: currentPlant, img: preview.src });
         }
 
-        starCount++;
+        plantCount++;
+        renderStars();
         saveData();
-
-        const targetStar = document.getElementById(`star${starCount}`);
-        if (targetStar) {
-            targetStar.classList.add('filled');
-        }
 
         missionBox.style.display = 'none';
 
-        if (starCount >= MAX_STARS) {
+        const bigStarEarned = (plantCount % 2 === 0);
+        const currentBigStarNum = Math.ceil(plantCount / 2);
+
+        if (plantCount >= MAX_PLANTS) {
             const now = Date.now();
             localStorage.setItem('completedTime', now);
             showCompleteUI(now);
         } else {
-            result.innerHTML = `⭐ 축하합니다! 별을 획득했습니다. (현재 ${starCount}/${MAX_STARS})`;
+            if (bigStarEarned) {
+                result.innerHTML = `🌟 축하합니다! 식물 2개를 다 찾아 <b>${currentBigStarNum}번째 큰 별</b>을 완성했습니다!`;
+            } else {
+                result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
+            }
         }
     }
 
-    // 도감 팝업 조작
     function openBook() {
         if (collectedCards.length === 0) {
             alert("아직 수집한 식물이 없어요! 미션을 성공해서 카드를 모아보세요.");
