@@ -288,6 +288,7 @@
         }
         .floating-book-btn:active { transform: scale(0.95); }
 
+        /* 모달 공유 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -415,7 +416,6 @@
 <body>
 
 <div class="box">
-    <!-- 설정 메뉴 -->
     <div class="top-left-settings">
         <button class="icon-btn" onclick="toggleSettingsMenu()">⚙️</button>
         <div id="settingsDropdown" class="settings-dropdown">
@@ -444,6 +444,7 @@
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
+    <!-- 별 UI -->
     <div class="stars-wrapper">
         <div class="star-box">
             <span class="big-star" id="star1">★</span>
@@ -466,15 +467,16 @@
             <div class="sub-dots"><span id="dot5_1">★</span><span id="dot5_2">★</span></div>
         </div>
     </div>
-
+    
     <div id="uploadArea">
         <label for="cameraInput" id="uploadBtn" class="btn">📷 식물 올리기 / 찍기</label>
-        <input type="file" id="cameraInput" accept="image/*">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
     </div>
 
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
+    <!-- 미션 상자 -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
         <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
@@ -491,6 +493,7 @@
 
 <button class="floating-book-btn" onclick="openBook()">📖 탐험 도감</button>
 
+<!-- 사용설명서 모달 -->
 <div id="guideModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeGuide()">&times;</span>
@@ -520,6 +523,7 @@
     </div>
 </div>
 
+<!-- 탐험 도감 모달 -->
 <div id="bookModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeBook()">&times;</span>
@@ -556,11 +560,19 @@
         maxPredictions = model.getTotalClasses();
     }
     initModel();
-
     const correctAudio = new Audio('answer.mp3');
     function playSound(audio) {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.log("음성 재생 오류:", e));
+        try {
+            audio.currentTime = 0;
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    console.log("모바일 자동재생 제한으로 사운드가 생략되었습니다:", e);
+                });
+            }
+        } catch(e) {
+            console.log("오디오 재생 에러 무시:", e);
+        }
     }
 
     const cameraInput = document.getElementById('cameraInput');
@@ -585,7 +597,7 @@
     let timerInterval = null;
 
     let currentPlant = "";
-
+    let isProcessing = false;
     const plantMissions = {
         "솔방울": "솔방울로 동그라미 모양 만들어보기!",
         "밤": "밤을 모아 ♥ 하트 모양 만들어보기!",
@@ -598,7 +610,6 @@
         "코스모스": "코스모스의 꽃잎 개수를 세어보기!",
         "떡갈나무잎": "떡갈나무잎으로 내 얼굴 모양 꾸며보기!"
     };
-
     const plantDescriptions = {
         "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 솔방울 안에는 소나무가 새롭게 자랄 수 있는 작은 씨앗이 들어 있답니다. 🌲",
         "밤": "밤은 밤나무에서 자라는 열매로, 뾰족뾰족한 가시가 있는 껍질 속에 들어 있어요. 껍질을 벗기면 갈색의 동그란 밤을 볼 수 있고, 삶거나 구워서 맛있게 먹을 수 있답니다. 🌰",
@@ -611,7 +622,6 @@
         "코스모스": "코스모스는 가을에 많이 볼 수 있는 예쁜 꽃으로, 분홍색·하얀색·보라색 등 다양한 색깔이 있어요. 가느다란 줄기에 꽃이 피며, 바람이 불면 살랑살랑 흔들리는 모습이 아름답답니다. 🌸",
         "떡갈나무잎": "떡잎은 씨앗에서 싹이 나올 때 처음 나오는 잎으로, 어린 식물이 자라는 데 필요한 영양분을 담고 있어요. 식물이 자라면서 진짜 잎이 나오면 떡잎은 점점 작아지고 떨어지기도 한답니다. 🌱"
     };
-
     let collectedCards = []; 
     let currentCardIndex = 0;
 
@@ -620,7 +630,6 @@
         dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
     }
 
-    /* 사용설명서 열기 / 닫기 */
     function openGuide() {
         document.getElementById('guideModal').style.display = 'flex';
         toggleSettingsMenu();
@@ -697,22 +706,17 @@
     function loadSavedState() {
         const lockStartTime = localStorage.getItem('lockStartTime');
         const now = Date.now();
-
         if (lockStartTime && (now - parseInt(lockStartTime)) >= RESET_TIME_MS) {
             localStorage.removeItem('lockStartTime');
             unlockUploadUI();
         }
-
         const savedPlantCount = localStorage.getItem('plantCount');
         const savedPlants = localStorage.getItem('foundPlants');
         const savedCards = localStorage.getItem('collectedCards');
-
         if (savedPlantCount) plantCount = parseInt(savedPlantCount);
         if (savedPlants) foundPlants = new Set(JSON.parse(savedPlants));
         if (savedCards) collectedCards = JSON.parse(savedCards);
-
         renderStars();
-
         const currentLockTime = localStorage.getItem('lockStartTime');
         if (currentLockTime) {
             showLockUI(parseInt(currentLockTime));
@@ -730,14 +734,11 @@
         localStorage.removeItem('foundPlants');
         localStorage.removeItem('lockStartTime');
         localStorage.removeItem('collectedCards');
-
         plantCount = 0;
         foundPlants = new Set();
         collectedCards = [];
-
         renderStars();
         unlockUploadUI();
-
         result.innerHTML = "";
         preview.style.display = 'none';
         missionBox.style.display = 'none';
@@ -754,7 +755,6 @@
 
     function startResetTimer(startTime) {
         if (timerInterval) clearInterval(timerInterval);
-
         function updateTimer() {
             const now = Date.now();
             const elapsed = now - startTime;
@@ -767,7 +767,6 @@
                 alert("⏰ 24시간이 지나 다음 큰 별에 도전할 수 있습니다!");
                 return;
             }
-
             const hours = Math.floor(remaining / (1000 * 60 * 60));
             const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
@@ -868,27 +867,31 @@
         reader.readAsDataURL(file);
     });
 
+    /* 미션 완료 (수정: 네이버 앱 연타 및 오디오 에러 방지 강화) */
     function completeMission() {
-        if (!currentPlant || localStorage.getItem('lockStartTime')) return;
+        if (!currentPlant || localStorage.getItem('lockStartTime') || isProcessing) return;
+
+        isProcessing = true; // 처리 시작 플래그
+        const targetPlant = currentPlant; 
+        currentPlant = ""; // 즉시 리셋하여 연속 클릭 막음
+        missionBox.style.display = 'none'; // 미션 창 즉시 닫기
 
         playSound(correctAudio);
 
-        foundPlants.add(currentPlant);
+        foundPlants.add(targetPlant);
 
-        const existingIndex = collectedCards.findIndex(item => item.name === currentPlant);
+        const existingIndex = collectedCards.findIndex(item => item.name === targetPlant);
         if (existingIndex >= 0) {
             collectedCards[existingIndex].img = preview.src;
         } 
         
         else {
-            collectedCards.push({ name: currentPlant, img: preview.src });
+            collectedCards.push({ name: targetPlant, img: preview.src });
         }
 
         plantCount++;
         renderStars();
         saveData();
-
-        missionBox.style.display = 'none';
 
         const bigStarEarned = (plantCount % 2 === 0);
         const currentBigStarNum = Math.floor(plantCount / 2);
@@ -904,7 +907,7 @@
             result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
         }
 
-        currentPlant = ""; 
+        isProcessing = false; // 처리 완료
     }
 
     function openBook() {
