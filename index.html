@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌱 어린이 식물 탐험대 🌱</title>
+    <title>🌱 숲프렌즈 🌱</title>
 
     <!-- 썸네일 -->
-    <meta property="og:title" content="🌱 어린이 식물 탐험대 🌱">
+    <meta property="og:title" content="🌱 숲프렌즈 🌱">
     <meta property="og:description" content="식물을 찾고 미션을 수행해 별을 모아보세요!">
     <meta property="og:image" content="some.png">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
@@ -210,7 +210,7 @@
             box-shadow: 0 5px #2e7d32; 
         }
         .btn:active { box-shadow: 0 0 #2e7d32; transform: translateY(5px); }
-        .btn.disabled { background: #555; box-shadow: none; cursor: not-allowed; }
+        .btn.disabled { background: #888 !important; box-shadow: none !important; cursor: not-allowed !important; }
 
         .confirm-btn {
             background: #ff9800;
@@ -230,7 +230,7 @@
         }
 
         #completeBox { display: none; margin-top: 20px; padding: 20px; background: var(--complete-bg); border: 3px solid var(--complete-border); border-radius: 18px; }
-        .complete-title { font-size: 1.6rem; color: var(--title-color); font-weight: bold; margin-bottom: 10px; }
+        .complete-title { font-size: 1.5rem; color: var(--title-color); font-weight: bold; margin-bottom: 10px; }
         .timer-text { margin-top: 10px; font-size: 1rem; color: #e65100; font-weight: bold; }
 
         .floating-book-btn {
@@ -371,13 +371,13 @@
         </div>
     </div>
 
-    <h1 class="main-title">🌱 어린이 식물 탐험대 🌱</h1>
+    <h1 class="main-title">🌱 숲프렌즈 🌱</h1>
 
     <div class="character-wrapper">
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
-    <!-- 별 ui -->
+    <!-- 큰 별 5개 + 작은 별 진행 UI -->
     <div class="stars-wrapper">
         <div class="star-box">
             <span class="big-star" id="star1">★</span>
@@ -416,13 +416,12 @@
         <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
     </div>
 
-    <!-- 미션 완수 시 -->
     <div id="completeBox">
-        <div class="complete-title">🏆 오늘 탐험 완수! 🏆</div>
-        <div style="font-size: 1.1rem; color: var(--title-color); font-weight: bold;">
-            큰 별 5개를 모두 모았습니다!<br>다음 탐험을 준비하세요.
+        <div class="complete-title" id="completeTitle">🌟 큰 별 획득! 충전 중 🌟</div>
+        <div style="font-size: 1.05rem; color: var(--title-color); font-weight: bold;" id="completeMsg">
+            큰 별 1개를 완성했습니다!<br>24시간 동안 식물이 다시 자라기를 기다려주세요.
         </div>
-        <div class="timer-text" id="resetTimer">⏳ 다음 탐험까지 남은 시간: --시간 --분 --초</div>
+        <div class="timer-text" id="resetTimer">⏳ 다음 큰 별 도전까지 남은 시간: --시간 --분 --초</div>
     </div>
 </div>
 
@@ -454,7 +453,7 @@
 </div>
 
 <script>
-    const URL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_URL/";
+    const URL = "https://teachablemachine.withgoogle.com/models/ebQ09FdjZ/";
     let model, maxPredictions;
 
     async function initModel() {
@@ -480,43 +479,45 @@
     const missionBox = document.getElementById('missionBox');
     const missionText = document.getElementById('missionText');
     const completeBox = document.getElementById('completeBox');
+    const completeTitle = document.getElementById('completeTitle');
+    const completeMsg = document.getElementById('completeMsg');
     const resetTimerText = document.getElementById('resetTimer');
 
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
     let plantCount = 0;
     const MAX_PLANTS = 10;
-    let foundPlants = new Set();
+    let foundPlants = new Set(); // 실제 '확인'을 누른 완성 식물 목록
 
-    const RESET_TIME_MS = 24 * 60 * 60 * 1000;
+    const RESET_TIME_MS = 24 * 60 * 60 * 1000; // 24시간
     let timerInterval = null;
 
     let currentPlant = "";
 
     const plantMissions = {
-        "솔방울": "솔방울로 동그라미 만들기!",
-        "밤": "밤송이나 밤 알맹이 찾아보기!",
-        "도토리": "도토리 모자 씌워주기!",
-        "단풍잎": "예쁜 단풍잎 손바닥에 올려보기!",
-        "은행잎": "노란 은행잎으로 부채 만들기!",
-        "감": "주황색 감 찾아 관찰하기!",
-        "소나무": "소나무 잎 세어보기!",
-        "강아지풀": "강아지풀로 간지럼 피우기!",
-        "코스모스": "코스모스 꽃잎 색깔 관찰하기!",
-        "떡갈나무잎": "커다란 떡갈나무잎으로 얼굴 가리기!"
+        "솔방울": "솔방울로 동그라미 모양 만들어보기!",
+        "밤": "밤을 모아 ♥ 하트 모양 만들어보기!",
+        "도토리": "도토리 5개를 크기 순서대로 놓아보기!",
+        "단풍잎": "단풍잎으로 나비 모양 만들어보기!",
+        "은행잎": "은행잎 3장을 모아 꽃 모양 만들어보기!",
+        "감": "떨어진 감을 찾아 감나무의 모습을 관찰해보기!",
+        "소나무": "소나무 주변에서 솔잎을 찾아 길게 놓아보기!",
+        "강아지풀": "강아지풀을 살짝 흔들어 꼬리처럼 움직여보기!",
+        "코스모스": "코스모스의 꽃잎 개수를 세어보기!",
+        "떡갈나무잎": "떡갈나무잎으로 내 얼굴 모양 꾸며보기!"
     };
 
     const plantDescriptions = {
-        "솔방울": "소나무의 열매예요! 날씨가 건조하면 비늘을 벌리고, 습하면 꽉 다무는 습성이 있어요.",
-        "밤": "가시가 뾰족뾰족한 밤송이 속에 들어있는 맛있는 가을 열매예요.",
-        "도토리": "참나무 종류의 열매로, 다람쥐가 가장 좋아하는 가을 식량이랍니다.",
-        "단풍잎": "가을이 되면 초록색에서 붉은색으로 예쁘게 물드는 나뭇잎이에요.",
-        "은행잎": "노란 부채 모양을 닮은 잎으로, 아주 오랜 옛날부터 지구에 살았던 나무예요.",
-        "감": "달콤하고 주황색으로 익어가는 대표적인 가을 과일이에요.",
-        "소나무": "사계절 내내 푸른 바늘 모양의 잎을 가지고 있는 나무예요.",
-        "강아지풀": "강아지 꼬리를 닮아 보송보송하고 귀여운 들풀이에요.",
-        "코스모스": "가을 바람에 하늘하늘 흔들리는 예쁜 꽃이에요.",
-        "떡갈나무잎": "잎이 아주 크고 넓어서 옛날에는 떡을 싸는 데 쓰기도 했어요."
+        "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 솔방울 안에는 소나무가 새롭게 자랄 수 있는 작은 씨앗이 들어 있답니다. 🌲",
+        "밤": "밤은 밤나무에서 자라는 열매로, 뾰족뾰족한 가시가 있는 껍질 속에 들어 있어요. 껍질을 벗기면 갈색의 동그란 밤을 볼 수 있고, 삶거나 구워서 맛있게 먹을 수 있답니다. 🌰",
+        "도토리": "도토리는 참나무에서 열리는 열매로, 동그랗고 갈색이며 위쪽에 작은 모자가 씌워져 있어요. 가을이 되면 나무에서 떨어져 숲속 다람쥐나 여러 동물들이 먹이로 이용한답니다. 🌰",
+        "단풍잎": "단풍잎은 가을이 되면 초록색에서 빨강, 노랑, 주황색 등으로 예쁘게 색이 변하는 나뭇잎이에요. 날씨가 추워지면 나뭇잎이 나무에서 떨어져 바닥을 알록달록하게 꾸며준답니다. 🍁",
+        "은행잎": "은행잎은 은행나무에서 자라는 잎으로, 부채처럼 생긴 독특한 모양을 가지고 있어요. 가을이 되면 초록색에서 노란색으로 변하고, 바람이 불면 바닥에 노랗게 떨어진답니다. 💛",
+        "감": "감은 감나무에서 열리는 가을 열매로, 동그랗고 주황색을 띠고 있어요. 잘 익은 감은 달콤하고 부드러우며, 말려서 곶감으로 만들어 먹기도 한답니다. 🟠",
+        "소나무": "소나무는 사계절 내내 초록색 잎을 볼 수 있는 나무예요. 뾰족하고 가느다란 잎이 모여 자라며, 솔방울도 소나무에서 열린답니다. 🌲",
+        "강아지풀": "강아지풀은 길쭉한 줄기 끝에 강아지 꼬리처럼 보이는 작은 꽃이삭이 달린 풀이에요. 손으로 살짝 만지면 보들보들한 느낌이 나고, 가을이 되면 노란빛이나 갈색으로 변한답니다. 🌾",
+        "코스모스": "코스모스는 가을에 많이 볼 수 있는 예쁜 꽃으로, 분홍색·하얀색·보라색 등 다양한 색깔이 있어요. 가느다란 줄기에 꽃이 피며, 바람이 불면 살랑살랑 흔들리는 모습이 아름답답니다. 🌸",
+        "떡갈나무잎": "안녕하세요원이입니다잘부탁드립니다 - 제나의 트로트 메들리 - 많관부~"
     };
 
     let collectedCards = []; 
@@ -580,12 +581,13 @@
     }
 
     function loadSavedState() {
-        const completedTime = localStorage.getItem('completedTime');
+        const lockStartTime = localStorage.getItem('lockStartTime');
         const now = Date.now();
 
-        if (completedTime && (now - parseInt(completedTime)) >= RESET_TIME_MS) {
-            clearSavedData();
-            return;
+        // 24시간 지난 경우 쿨타임 해제
+        if (lockStartTime && (now - parseInt(lockStartTime)) >= RESET_TIME_MS) {
+            localStorage.removeItem('lockStartTime');
+            unlockUploadUI();
         }
 
         const savedPlantCount = localStorage.getItem('plantCount');
@@ -598,8 +600,9 @@
 
         renderStars();
 
-        if (plantCount >= MAX_PLANTS && completedTime) {
-            showCompleteUI(parseInt(completedTime));
+        const currentLockTime = localStorage.getItem('lockStartTime');
+        if (currentLockTime) {
+            showLockUI(parseInt(currentLockTime));
         }
     }
 
@@ -612,7 +615,7 @@
     function clearSavedData() {
         localStorage.removeItem('plantCount');
         localStorage.removeItem('foundPlants');
-        localStorage.removeItem('completedTime');
+        localStorage.removeItem('lockStartTime');
         localStorage.removeItem('collectedCards');
 
         plantCount = 0;
@@ -620,11 +623,8 @@
         collectedCards = [];
 
         renderStars();
+        unlockUploadUI();
 
-        completeBox.style.display = 'none';
-        uploadBtn.classList.remove('disabled');
-        uploadBtn.innerText = "📷 식물 올리기 / 찍기";
-        cameraInput.disabled = false;
         result.innerHTML = "";
         preview.style.display = 'none';
         missionBox.style.display = 'none';
@@ -639,18 +639,20 @@
         }
     }
 
-    function startResetTimer(completedTime) {
+    // 🌟 큰 별 획득 후 24시간 쿨타임 타이머 작동
+    function startResetTimer(startTime) {
         if (timerInterval) clearInterval(timerInterval);
 
         function updateTimer() {
             const now = Date.now();
-            const elapsed = now - completedTime;
+            const elapsed = now - startTime;
             const remaining = RESET_TIME_MS - elapsed;
 
             if (remaining <= 0) {
                 clearInterval(timerInterval);
-                clearSavedData();
-                alert("⏰ 24시간이 지나 새로운 탐험을 시작할 수 있습니다.");
+                localStorage.removeItem('lockStartTime');
+                unlockUploadUI();
+                alert("⏰ 24시간이 지나 다음 큰 별에 도전할 수 있습니다!");
                 return;
             }
 
@@ -658,20 +660,36 @@
             const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
-            resetTimerText.innerText = `⏳ 다음 탐험까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
+            resetTimerText.innerText = `⏳ 다음 도전까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
         }
 
         updateTimer();
         timerInterval = setInterval(updateTimer, 1000);
     }
 
-    function showCompleteUI(completedTime) {
+    function showLockUI(startTime) {
         completeBox.style.display = 'block';
         uploadBtn.classList.add('disabled');
-        uploadBtn.innerText = "🔒 오늘 탐험 완료";
+        uploadBtn.innerText = "⏳ 24시간 휴식 중...";
         cameraInput.disabled = true;
-        result.innerHTML = "오늘의 탐험을 성공적으로 마쳤습니다!";
-        startResetTimer(completedTime);
+
+        if (plantCount >= MAX_PLANTS) {
+            completeTitle.innerText = "🏆 모든 큰 별 완수! 🏆";
+            completeMsg.innerHTML = "큰 별 5개를 모두 모으셨습니다!<br>축하합니다, 최고의 식물 탐험가예요!";
+        } else {
+            completeTitle.innerText = "🌟 큰 별 획득! 휴식 중 🌟";
+            completeMsg.innerHTML = `큰 별 ${Math.floor(plantCount / 2)}개를 모았습니다!<br>24시간 후 다음 큰 별 도전에 참여해보세요.`;
+        }
+
+        startResetTimer(startTime);
+    }
+
+    function unlockUploadUI() {
+        completeBox.style.display = 'none';
+        uploadBtn.classList.remove('disabled');
+        uploadBtn.innerText = "📷 식물 올리기 / 찍기";
+        cameraInput.disabled = false;
+        if (timerInterval) clearInterval(timerInterval);
     }
 
     loadSavedState();
@@ -688,24 +706,24 @@
         return prediction[0];
     }
 
-    // 🔧 [핵심 수정 부분] 이미지 동기화 버그 수정
+    // 📷 카메라/사진 업로드 처리
     cameraInput.addEventListener('change', function(e) {
-        if (plantCount >= MAX_PLANTS) return;
+        if (localStorage.getItem('lockStartTime')) return;
 
         const file = e.target.files[0];
         if (!file) return;
 
+        // 새로운 사진 선택 시 이전 미션 상자 닫고 초기화
         missionBox.style.display = 'none';
+        currentPlant = "";
         result.innerHTML = "🔍 AI 식물 분석 중...";
 
         const reader = new FileReader();
         
-        // 1. 파일 읽기가 끝나면 이미지 src에 넣음
         reader.onload = function(event) {
             preview.src = event.target.result;
         };
 
-        // 2. 이미지가 브라우저에 완전히 로드된 "후"에만 AI 분류 실행
         preview.onload = async function() {
             preview.style.display = 'block';
 
@@ -714,11 +732,11 @@
             const confidence = topPrediction.probability;
 
             if (plantMissions.hasOwnProperty(plantName) && confidence >= 0.70) {
-                currentPlant = plantName;
-
-                if (foundPlants.has(currentPlant)) {
-                    result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!<br><span style="color:#e65100; font-size:1rem;">이미 수집한 항목입니다. 다른 식물을 찾아보세요!</span>`;
+                // 이미 수집 완성(확인 클릭)된 식물인 경우
+                if (foundPlants.has(plantName)) {
+                    result.innerHTML = `🌿 <b>${plantName}</b> 발견!<br><span style="color:#e65100; font-size:1rem;">이미 별을 모은 항목입니다. 다른 식물을 찾아보세요!</span>`;
                 } else {
+                    currentPlant = plantName;
                     result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!`;
                     const mission = plantMissions[currentPlant];
                     missionText.innerHTML = `<b>🎯 [탐험 미션]</b><br>${mission}`;
@@ -729,18 +747,19 @@
                 result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 10가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
             }
             
-            // 사용한 파일 값을 초기화하여 동일 사진 재선택 시에도 정상 이벤트 발생
             cameraInput.value = "";
         };
 
         reader.readAsDataURL(file);
     });
 
+    // 🌟 [확인] 버튼 클릭 시에만 최종 수집 및 별 추가
     function completeMission() {
-        if (plantCount >= MAX_PLANTS || !currentPlant) return;
+        if (!currentPlant || localStorage.getItem('lockStartTime')) return;
 
         playSound(correctAudio);
 
+        // 정식으로 완료 목록에 추가
         foundPlants.add(currentPlant);
 
         const existingIndex = collectedCards.findIndex(item => item.name === currentPlant);
@@ -756,20 +775,20 @@
 
         missionBox.style.display = 'none';
 
-        const bigStarEarned = (plantCount % 2 === 0);
-        const currentBigStarNum = Math.ceil(plantCount / 2);
+        const bigStarEarned = (plantCount % 2 === 0); // 2개 수집 시 큰 별 완성
+        const currentBigStarNum = Math.floor(plantCount / 2);
 
-        if (plantCount >= MAX_PLANTS) {
+        if (bigStarEarned) {
+            // 🌟 큰 별 1개를 얻을 때마다 24시간 쿨타임 발동!
             const now = Date.now();
-            localStorage.setItem('completedTime', now);
-            showCompleteUI(now);
+            localStorage.setItem('lockStartTime', now);
+            result.innerHTML = `🌟 축하합니다! <b>${currentBigStarNum}번째 큰 별</b>을 얻었습니다!`;
+            showLockUI(now);
         } else {
-            if (bigStarEarned) {
-                result.innerHTML = `🌟 축하합니다! 식물 2개를 다 찾아 <b>${currentBigStarNum}번째 큰 별</b>을 완성했습니다!`;
-            } else {
-                result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
-            }
+            result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
         }
+
+        currentPlant = ""; // 임시 선택 식물 초기화
     }
 
     function openBook() {
