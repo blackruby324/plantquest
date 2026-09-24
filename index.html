@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌱 어린이 식물 탐험대 🌱</title>
 
-    <!-- 카카오톡 및 SNS 공유용 OG 태그 -->
+    <!-- 썸네일 -->
     <meta property="og:title" content="🌱 어린이 식물 탐험대 🌱">
     <meta property="og:description" content="식물을 찾고 미션을 수행해 별을 모아보세요!">
     <meta property="og:image" content="some.png">
@@ -59,6 +59,7 @@
             color: var(--text-color);
             margin: 0; 
             transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 90px; /* 오른쪽 아래 고정 버튼과 안 겹치도록 여백 추가 */
         }
 
         .box { 
@@ -72,7 +73,7 @@
             transition: background-color 0.3s;
         }
 
-        /* 왼쪽 위 설정 버튼 */
+        /* 설정 버튼 */
         .top-left-settings {
             position: absolute;
             top: 15px;
@@ -141,7 +142,6 @@
         .star { color: var(--star-empty); transition: color 0.5s ease, transform 0.3s ease; display: inline-block; }
         .star.filled { color: #ffca28; text-shadow: 0 0 10px #ffe082; transform: scale(1.15); }
 
-        /* 사용자 커스텀 멘트 영역 */
         .custom-message-box {
             margin: 15px 0;
             padding: 10px;
@@ -209,6 +209,148 @@
         #completeBox { display: none; margin-top: 20px; padding: 20px; background: var(--complete-bg); border: 3px solid var(--complete-border); border-radius: 18px; }
         .complete-title { font-size: 1.6rem; color: var(--title-color); font-weight: bold; margin-bottom: 10px; }
         .timer-text { margin-top: 10px; font-size: 1rem; color: #e65100; font-weight: bold; }
+
+        /* 📍 오른쪽 아래 플로팅 도감 버튼 📍 */
+        .floating-book-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            z-index: 90;
+            background: #ffb74d;
+            color: #333;
+            border: 3px solid #f57c00;
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .floating-book-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 🎴 포켓몬 카드 도감 모달 스타일 🎴 */
+        .book-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .book-modal-content {
+            background: var(--box-bg);
+            padding: 20px;
+            border-radius: 20px;
+            width: 88%;
+            max-width: 360px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .close-book-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .pokemon-card {
+            background: linear-gradient(135deg, #fffde7, #fff9c4);
+            border: 8px solid #fbc02d;
+            border-radius: 18px;
+            padding: 12px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body.dark-mode .pokemon-card {
+            background: linear-gradient(135deg, #2a281e, #1f1d14);
+            border-color: #fbc02d;
+            color: #fff;
+        }
+
+        .card-header {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #e65100;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #fbc02d;
+            width: 100%;
+            padding-bottom: 4px;
+        }
+
+        body.dark-mode .card-header { color: #ffb74d; }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 180px;
+            background: #e0e0e0;
+            border: 3px solid #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            width: 100%;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 10px;
+            box-sizing: border-box;
+            min-height: 70px;
+            text-align: left;
+        }
+
+        body.dark-mode .card-body { background: rgba(0,0,0,0.4); }
+
+        .card-desc {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        .card-footer {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #757575;
+        }
+
+        .card-nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -256,16 +398,11 @@
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
-    <!-- ========================================== -->
-    <!-- [미션칸] 시작 -->
-    <!-- ========================================== -->
+    <!-- [미션칸] -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
         <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (별 획득!)</button>
     </div>
-    <!-- ========================================== -->
-    <!-- [미션칸] 끝 -->
-    <!-- ========================================== -->
 
     <!-- 미션 완수 시 -->
     <div id="completeBox">
@@ -273,7 +410,34 @@
         <div style="font-size: 1.1rem; color: var(--title-color); font-weight: bold;">
             별 3개를 모두 모았습니다<br>다음 탐험을 준비하세요.
         </div>
-        <div class="timer-text" id="resetTimer">⏳ 다음 탐험까지 남은 시간: --분 --초</div>
+        <div class="timer-text" id="resetTimer">⏳ 다음 탐험까지 남은 시간: --시간 --분 --초</div>
+    </div>
+</div>
+
+<!-- 📍 오른쪽 아래 고정 도감 버튼 📍 -->
+<button class="floating-book-btn" onclick="openBook()">📖 탐험 도감</button>
+
+<!-- 🎴 포켓몬 카드 형태 도감 모달 🎴 -->
+<div id="bookModal" class="book-modal">
+    <div class="book-modal-content">
+        <span class="close-book-btn" onclick="closeBook()">&times;</span>
+        <h2 style="margin: 0 0 15px 0; color: var(--title-color);">🌱 나의 탐험 도감 🌱</h2>
+        
+        <div class="pokemon-card">
+            <div class="card-header" id="cardTitle">식물 이름</div>
+            <div class="card-img-wrapper">
+                <img id="cardImage" src="" alt="식물 사진">
+            </div>
+            <div class="card-body">
+                <div class="card-desc" id="cardDesc">설명 공간입니다.</div>
+            </div>
+            <div class="card-footer" id="cardPageIndicator">1 / 12</div>
+        </div>
+
+        <div class="card-nav-btns">
+            <button class="nav-btn" onclick="prevCard()">◀ 이전</button>
+            <button class="nav-btn" onclick="nextCard()">다음 ▶</button>
+        </div>
     </div>
 </div>
 
@@ -304,28 +468,46 @@
     const MAX_STARS = 3;
     let foundPlants = new Set();
 
-    const RESET_TIME_MS = 24 * 60 * 60 * 1000; // 24시간(ms)
+    // ⏱️ 제한 시간: 24시간 설정
+    const RESET_TIME_MS = 24 * 60 * 60 * 1000;
     let timerInterval = null;
 
     let currentPlant = "";
 
-    // ==========================================
     // [미션칸] 12가지 식물별 미션 문구 정의
-    // ==========================================
     const plantMissions = {
         "솔방울": "솔방울로 동그라미 만들기!",
-        "밤": "밤을 모아 ♥ 하트 모양 만들어보기!",
-        "도토리": "도토리 5개를 크기 순서대로 놓아보기!",
-        "단풍잎": "단풍잎으로 나비 모양 만들어보기!",
-        "은행잎": "은행잎 3장을 모아 꽃 모양 만들어보기!",
-        "감": "떨어진 감을 찾아 감나무의 모습을 관찰해보기!",
-        "소나무": "소나무 주변에서 솔잎을 찾아 길게 놓아보기!",
-        "강아지풀": "강아지풀을 살짝 흔들어 꼬리처럼 움직여보기!",
-        "코스모스": "코스모스의 꽃잎 개수를 세어보기!",
-        "떡갈나무잎": "떡갈나무잎으로 내 얼굴 모양 꾸며보기!",
-        "국화": "국화의 꽃잎을 자세히 관찰하고 색깔 찾아보기!",
-        "억새풀": "억새가 바람에 어떻게 움직이는지 몸으로 표현해보기!"
+        "밤": "밤송이나 밤 알맹이 찾아보기!",
+        "도토리": "도토리 모자 씌워주기!",
+        "단풍잎": "예쁜 단풍잎 손바닥에 올려보기!",
+        "은행잎": "노란 은행잎으로 부채 만들기!",
+        "감": "주황색 감 찾아 관찰하기!",
+        "소나무": "소나무 잎 세어보기!",
+        "강아지풀": "강아지풀로 간지럼 피우기!",
+        "코스모스": "코스모스 꽃잎 색깔 관찰하기!",
+        "떡갈나무잎": "커다란 떡갈나무잎으로 얼굴 가리기!",
+        "국화": "국화꽃 냄새 맡아보기!",
+        "억새풀": "바람에 흔들리는 억새풀 흉내내기!"
     };
+
+    // 🎴 12가지 식물별 포켓몬 카드 설명 데이터
+    const plantDescriptions = {
+        "솔방울": "소나무의 열매예요! 날씨가 건조하면 비늘을 벌리고, 습하면 꽉 다무는 습성이 있어요.",
+        "밤": "가시가 뾰족뾰족한 밤송이 속에 들어있는 맛있는 가을 열매예요.",
+        "도토리": "참나무 종류의 열매로, 다람쥐가 가장 좋아하는 가을 식량이랍니다.",
+        "단풍잎": "가을이 되면 초록색에서 붉은색으로 예쁘게 물드는 나뭇잎이에요.",
+        "은행잎": "노란 부채 모양을 닮은 잎으로, 아주 오랜 옛날부터 지구에 살았던 나무예요.",
+        "감": "달콤하고 주황색으로 익어가는 대표적인 가을 과일이에요.",
+        "소나무": "사계절 내내 푸른 바늘 모양의 잎을 가지고 있는 나무예요.",
+        "강아지풀": "강아지 꼬리를 닮아 보송보송하고 귀여운 들풀이에요.",
+        "코스모스": "가을 바람에 하늘하늘 흔들리는 예쁜 꽃이에요.",
+        "떡갈나무잎": "잎이 아주 크고 넓어서 옛날에는 떡을 싸는 데 쓰기도 했어요.",
+        "국화": "가을에 향기로운 꽃을 피우는 가을의 대표적인 꽃이에요.",
+        "억새풀": "가을이 되면 은빛 억새 물결을 이루며 바람에 흔들리는 풀이에요."
+    };
+
+    let collectedCards = []; 
+    let currentCardIndex = 0;
 
     // 설정 드롭다운 토글
     function toggleSettingsMenu() {
@@ -373,9 +555,11 @@
 
         const savedStars = localStorage.getItem('starCount');
         const savedPlants = localStorage.getItem('foundPlants');
+        const savedCards = localStorage.getItem('collectedCards');
 
         if (savedStars) starCount = parseInt(savedStars);
         if (savedPlants) foundPlants = new Set(JSON.parse(savedPlants));
+        if (savedCards) collectedCards = JSON.parse(savedCards);
 
         for (let i = 1; i <= starCount; i++) {
             const star = document.getElementById(`star${i}`);
@@ -390,15 +574,18 @@
     function saveData() {
         localStorage.setItem('starCount', starCount);
         localStorage.setItem('foundPlants', JSON.stringify(Array.from(foundPlants)));
+        localStorage.setItem('collectedCards', JSON.stringify(collectedCards));
     }
 
     function clearSavedData() {
         localStorage.removeItem('starCount');
         localStorage.removeItem('foundPlants');
         localStorage.removeItem('completedTime');
+        localStorage.removeItem('collectedCards');
 
         starCount = 0;
         foundPlants = new Set();
+        collectedCards = [];
 
         for (let i = 1; i <= MAX_STARS; i++) {
             const star = document.getElementById(`star${i}`);
@@ -437,11 +624,12 @@
                 alert("⏰ 24시간이 지나 새로운 탐험을 시작할 수 있습니다.");
                 return;
             }
-	    // 시,분,초 계산
-	    const hours = Math.floor(remaining / (1000 * 60 * 60));
+
+            const hours = Math.floor(remaining / (1000 * 60 * 60));
             const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-            resetTimerText.innerText = `⏳ 다음 탐험까지 남은 시간: ${minutes}분 ${seconds}초`;
+
+            resetTimerText.innerText = `⏳ 다음 탐험까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
         }
 
         updateTimer();
@@ -459,9 +647,8 @@
 
     loadSavedState();
 
-    // 임시 테스트용 인식 함수 (추후 Teachable Machine 모델 연결)
+    // 임시 테스트용 인식 함수 (추후 Teachable Machine 모델 주소로 대체 예정)
     function recognizePlant(imageElement) {
-        // 12가지 품목 중 랜덤 선택 (모델 학습 완료 후 실제 추론 로직으로 교체)
         const plantKeys = Object.keys(plantMissions);
         const randomIndex = Math.floor(Math.random() * plantKeys.length);
         return plantKeys[randomIndex];
@@ -480,7 +667,6 @@
             preview.src = event.target.result;
             preview.style.display = 'block';
 
-            // 이미지 인식 수행 (추후 Teachable Machine으로 대체)
             currentPlant = recognizePlant(preview);
 
             if (foundPlants.has(currentPlant)) {
@@ -488,9 +674,6 @@
             } else {
                 result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!`;
                 
-                // ==========================================
-                // [미션칸] 미션 출력 로직
-                // ==========================================
                 const mission = plantMissions[currentPlant] || "식물과 함께 멋진 사진 찍기!";
                 missionText.innerHTML = `<b>🎯 [탐험 미션]</b><br>${mission}`;
                 missionBox.style.display = 'block';
@@ -499,17 +682,23 @@
         reader.readAsDataURL(file);
     });
 
-    // ==========================================
-    // [미션칸] 미션 완료 및 별 획득 처리 함수
-    // ==========================================
+    // 미션 완료 및 카드 수집 처리
     function completeMission() {
         if (starCount >= MAX_STARS || !currentPlant) return;
 
         playSound(correctAudio);
 
         foundPlants.add(currentPlant);
-        starCount++;
 
+        // 도감 카드 추가/업데이트
+        const existingIndex = collectedCards.findIndex(item => item.name === currentPlant);
+        if (existingIndex >= 0) {
+            collectedCards[existingIndex].img = preview.src;
+        } else {
+            collectedCards.push({ name: currentPlant, img: preview.src });
+        }
+
+        starCount++;
         saveData();
 
         const targetStar = document.getElementById(`star${starCount}`);
@@ -526,6 +715,45 @@
         } else {
             result.innerHTML = `⭐ 축하합니다! 별을 획득했습니다. (현재 ${starCount}/${MAX_STARS})`;
         }
+    }
+
+    // 🎴 도감 관련 기능
+    function openBook() {
+        if (collectedCards.length === 0) {
+            alert("아직 수집한 식물이 없어요! 미션을 성공해서 카드를 모아보세요.");
+            return;
+        }
+        currentCardIndex = 0;
+        updateCardUI();
+        document.getElementById('bookModal').style.display = 'flex';
+    }
+
+    function closeBook() {
+        document.getElementById('bookModal').style.display = 'none';
+    }
+
+    function updateCardUI() {
+        if (collectedCards.length === 0) return;
+
+        const currentData = collectedCards[currentCardIndex];
+        const plantName = currentData.name;
+
+        document.getElementById('cardTitle').innerText = plantName;
+        document.getElementById('cardImage').src = currentData.img;
+        document.getElementById('cardDesc').innerText = plantDescriptions[plantName] || "멋진 탐험 식물입니다!";
+        document.getElementById('cardPageIndicator').innerText = `${currentCardIndex + 1} / ${collectedCards.length}`;
+    }
+
+    function prevCard() {
+        if (collectedCards.length === 0) return;
+        currentCardIndex = (currentCardIndex - 1 + collectedCards.length) % collectedCards.length;
+        updateCardUI();
+    }
+
+    function nextCard() {
+        if (collectedCards.length === 0) return;
+        currentCardIndex = (currentCardIndex + 1) % collectedCards.length;
+        updateCardUI();
     }
 </script>
 
