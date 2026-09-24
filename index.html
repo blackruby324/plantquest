@@ -9,8 +9,6 @@
     <meta property="og:title" content="🌱 어린이 식물 탐험대 🌱">
     <meta property="og:description" content="식물을 찾고 미션을 수행해 별을 모아보세요!">
     <meta property="og:image" content="some.png">
-
-    <!-- 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
@@ -139,7 +137,6 @@
         .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
         .character-img { width: 140px; height: 140px; object-fit: contain; }
         
-        /* 🌟 별 5개 슬롯 & 작은 별 2개 진행 표시 UI */
         .stars-wrapper {
             display: flex;
             justify-content: center;
@@ -359,7 +356,7 @@
 <body>
 
 <div class="box">
-    <!-- 왼쪽 위 설정 메뉴 -->
+    <!-- 설정 메뉴 -->
     <div class="top-left-settings">
         <button class="icon-btn" onclick="toggleSettingsMenu()">⚙️</button>
         <div id="settingsDropdown" class="settings-dropdown">
@@ -380,29 +377,24 @@
         <img id="character" class="character-img" src="character.jpg" alt="캐릭터">
     </div>
 
-    <!-- 🌟 큰 별 5개 + 작은 별(2개 세트) UI -->
+    <!-- 별 ui -->
     <div class="stars-wrapper">
-        <!-- 1번 별 -->
         <div class="star-box">
             <span class="big-star" id="star1">★</span>
             <div class="sub-dots"><span id="dot1_1">★</span><span id="dot1_2">★</span></div>
         </div>
-        <!-- 2번 별 -->
         <div class="star-box">
             <span class="big-star" id="star2">★</span>
             <div class="sub-dots"><span id="dot2_1">★</span><span id="dot2_2">★</span></div>
         </div>
-        <!-- 3번 별 -->
         <div class="star-box">
             <span class="big-star" id="star3">★</span>
             <div class="sub-dots"><span id="dot3_1">★</span><span id="dot3_2">★</span></div>
         </div>
-        <!-- 4번 별 -->
         <div class="star-box">
             <span class="big-star" id="star4">★</span>
             <div class="sub-dots"><span id="dot4_1">★</span><span id="dot4_2">★</span></div>
         </div>
-        <!-- 5번 별 -->
         <div class="star-box">
             <span class="big-star" id="star5">★</span>
             <div class="sub-dots"><span id="dot5_1">★</span><span id="dot5_2">★</span></div>
@@ -418,7 +410,7 @@
     <img id="preview" alt="선택한 식물 사진">
     <div id="result"></div>
 
-    <!-- [미션 상자] -->
+    <!-- 미션 상자 -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
         <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
@@ -462,7 +454,7 @@
 </div>
 
 <script>
-    const URL = "https://teachablemachine.withgoogle.com/models/ebQ09FdjZ/";
+    const URL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_URL/";
     let model, maxPredictions;
 
     async function initModel() {
@@ -492,40 +484,39 @@
 
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    // 🌟 핵심 로직 변수 (총 10개 식물 수집 = 큰 별 5개)
-    let plantCount = 0;        // 수집한 총 식물 개수 (0~10)
-    const MAX_PLANTS = 10;     // 큰 별 5개 x 식물 2개
+    let plantCount = 0;
+    const MAX_PLANTS = 10;
     let foundPlants = new Set();
 
-    const RESET_TIME_MS = 24 * 60 * 60 * 1000; // 24시간
+    const RESET_TIME_MS = 24 * 60 * 60 * 1000;
     let timerInterval = null;
 
     let currentPlant = "";
 
     const plantMissions = {
         "솔방울": "솔방울로 동그라미 만들기!",
-        "밤": "밤을 모아 ♥ 하트 모양 만들어보기!",
-        "도토리": "도토리 5개를 크기 순서대로 놓아보기!",
-        "단풍잎": "단풍잎으로 나비 모양 만들어보기!",
-        "은행잎": "은행잎 3장을 모아 꽃 모양 만들어보기!",
-        "감": "떨어진 감을 찾아 감나무의 모습을 관찰해보기!",
-        "소나무": "소나무 주변에서 솔잎을 찾아 길게 놓아보기!",
-        "강아지풀": "강아지풀을 살짝 흔들어 꼬리처럼 움직여보기!",
-        "코스모스": "코스모스의 꽃잎 개수를 세어보기!",
-        "떡갈나무잎": "떡갈나무잎으로 내 얼굴 모양 꾸며보기!"
+        "밤": "밤송이나 밤 알맹이 찾아보기!",
+        "도토리": "도토리 모자 씌워주기!",
+        "단풍잎": "예쁜 단풍잎 손바닥에 올려보기!",
+        "은행잎": "노란 은행잎으로 부채 만들기!",
+        "감": "주황색 감 찾아 관찰하기!",
+        "소나무": "소나무 잎 세어보기!",
+        "강아지풀": "강아지풀로 간지럼 피우기!",
+        "코스모스": "코스모스 꽃잎 색깔 관찰하기!",
+        "떡갈나무잎": "커다란 떡갈나무잎으로 얼굴 가리기!"
     };
 
     const plantDescriptions = {
-        "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 솔방울 안에는 소나무가 새롭게 자랄 수 있는 작은 씨앗이 들어 있답니다. 🌲",
-        "밤": "밤은 밤나무에서 자라는 열매로, 뾰족뾰족한 가시가 있는 껍질 속에 들어 있어요. 껍질을 벗기면 갈색의 동그란 밤을 볼 수 있고, 삶거나 구워서 맛있게 먹을 수 있답니다. 🌰",
-        "도토리": "도토리는 참나무에서 열리는 열매로, 동그랗고 갈색이며 위쪽에 작은 모자가 씌워져 있어요. 가을이 되면 나무에서 떨어져 숲속 다람쥐나 여러 동물들이 먹이로 이용한답니다. 🌰",
-        "단풍잎": "단풍잎은 가을이 되면 초록색에서 빨강, 노랑, 주황색 등으로 예쁘게 색이 변하는 나뭇잎이에요. 날씨가 추워지면 나뭇잎이 나무에서 떨어져 바닥을 알록달록하게 꾸며준답니다. 🍁",
-        "은행잎": "은행잎은 은행나무에서 자라는 잎으로, 부채처럼 생긴 독특한 모양을 가지고 있어요. 가을이 되면 초록색에서 노란색으로 변하고, 바람이 불면 바닥에 노랗게 떨어진답니다. 💛",
-        "감": "감은 감나무에서 열리는 가을 열매로, 동그랗고 주황색을 띠고 있어요. 잘 익은 감은 달콤하고 부드러우며, 말려서 곶감으로 만들어 먹기도 한답니다. 🟠",
-        "소나무": "소나무는 사계절 내내 초록색 잎을 볼 수 있는 나무예요. 뾰족하고 가느다란 잎이 모여 자라며, 솔방울도 소나무에서 열린답니다. 🌲",
-        "강아지풀": "강아지풀은 길쭉한 줄기 끝에 강아지 꼬리처럼 보이는 작은 꽃이삭이 달린 풀이에요. 손으로 살짝 만지면 보들보들한 느낌이 나고, 가을이 되면 노란빛이나 갈색으로 변한답니다. 🌾",
-        "코스모스": "코스모스는 가을에 많이 볼 수 있는 예쁜 꽃으로, 분홍색·하얀색·보라색 등 다양한 색깔이 있어요. 가느다란 줄기에 꽃이 피며, 바람이 불면 살랑살랑 흔들리는 모습이 아름답답니다. 🌸",
-        "떡갈나무잎": "예 정"
+        "솔방울": "소나무의 열매예요! 날씨가 건조하면 비늘을 벌리고, 습하면 꽉 다무는 습성이 있어요.",
+        "밤": "가시가 뾰족뾰족한 밤송이 속에 들어있는 맛있는 가을 열매예요.",
+        "도토리": "참나무 종류의 열매로, 다람쥐가 가장 좋아하는 가을 식량이랍니다.",
+        "단풍잎": "가을이 되면 초록색에서 붉은색으로 예쁘게 물드는 나뭇잎이에요.",
+        "은행잎": "노란 부채 모양을 닮은 잎으로, 아주 오랜 옛날부터 지구에 살았던 나무예요.",
+        "감": "달콤하고 주황색으로 익어가는 대표적인 가을 과일이에요.",
+        "소나무": "사계절 내내 푸른 바늘 모양의 잎을 가지고 있는 나무예요.",
+        "강아지풀": "강아지 꼬리를 닮아 보송보송하고 귀여운 들풀이에요.",
+        "코스모스": "가을 바람에 하늘하늘 흔들리는 예쁜 꽃이에요.",
+        "떡갈나무잎": "잎이 아주 크고 넓어서 옛날에는 떡을 싸는 데 쓰기도 했어요."
     };
 
     let collectedCards = []; 
@@ -564,7 +555,6 @@
 
     initTheme();
 
-    // 🌟 별 UI 렌더링 함수
     function renderStars() {
         for (let group = 1; group <= 5; group++) {
             const bigStar = document.getElementById(`star${group}`);
@@ -574,17 +564,14 @@
             const requiredPlantsForGroup = group * 2;
 
             if (plantCount >= requiredPlantsForGroup) {
-                // 식물 2개 채움 ➔ 큰 별 완성!
                 bigStar.classList.add('filled');
                 dot1.classList.add('active');
                 dot2.classList.add('active');
             } else if (plantCount === requiredPlantsForGroup - 1) {
-                // 식물 1개 채움 ➔ 작은 별 1개 활성화
                 bigStar.classList.remove('filled');
                 dot1.classList.add('active');
                 dot2.classList.remove('active');
             } else {
-                // 0개
                 bigStar.classList.remove('filled');
                 dot1.classList.remove('active');
                 dot2.classList.remove('active');
@@ -701,7 +688,8 @@
         return prediction[0];
     }
 
-    cameraInput.addEventListener('change', async function(e) {
+    // 🔧 [핵심 수정 부분] 이미지 동기화 버그 수정
+    cameraInput.addEventListener('change', function(e) {
         if (plantCount >= MAX_PLANTS) return;
 
         const file = e.target.files[0];
@@ -711,8 +699,14 @@
         result.innerHTML = "🔍 AI 식물 분석 중...";
 
         const reader = new FileReader();
-        reader.onload = async function(event) {
+        
+        // 1. 파일 읽기가 끝나면 이미지 src에 넣음
+        reader.onload = function(event) {
             preview.src = event.target.result;
+        };
+
+        // 2. 이미지가 브라우저에 완전히 로드된 "후"에만 AI 분류 실행
+        preview.onload = async function() {
             preview.style.display = 'block';
 
             const topPrediction = await classifyImage(preview);
@@ -734,11 +728,14 @@
                 currentPlant = "";
                 result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 10가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
             }
+            
+            // 사용한 파일 값을 초기화하여 동일 사진 재선택 시에도 정상 이벤트 발생
+            cameraInput.value = "";
         };
+
         reader.readAsDataURL(file);
     });
 
-    // 🌟 미션 성공 시 별 업데이트
     function completeMission() {
         if (plantCount >= MAX_PLANTS || !currentPlant) return;
 
