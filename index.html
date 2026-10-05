@@ -857,6 +857,14 @@ initModel();
         });
     });
 
+const badgeNames = {
+        2: "🌱 씨앗 뱃지",
+        4: "🌿 새싹 뱃지",
+        6: "🍃 풀잎 뱃지",
+        8: "🌸 꽃 뱃지",
+        10: "🍎 열매 뱃지"
+    };
+
     function completeMission() {
         if (!currentPlant || isProcessing) return;
         if (totalStars >= MAX_STARS) {
@@ -883,21 +891,28 @@ initModel();
 
         missionBox.style.display = 'none';
         
-        // 별 개수가 짝수(2, 4, 6, 8, 10)가 될 때 컬러 뱃지 완성 메시지 출력
+        // 💡 별 개수가 짝수(2, 4, 6, 8, 10개)가 되어 컬러 뱃지를 달성했을 때
         if (totalStars % 2 === 0) {
-            result.innerHTML = `✨ 미션 성공! 별 2개가 모여 새로운 **컬러 뱃지**를 획득했습니다! 🏅`;
-        } else {
-            result.innerHTML = `✨ 미션 성공! 탐험 별(★) 1개를 얻었습니다! (한 개 더 모으면 컬러 뱃지 획득!)`;
-        }
+            const currentBadgeName = badgeNames[totalStars] || "컬러 뱃지";
 
-        // 별 획득 후 24시간 휴식 타이머 시작
-        const lockStartTime = Date.now();
-        localStorage.setItem('lockStartTime', lockStartTime);
-        showLockUI(lockStartTime);
+            // 1. 화면 텍스트 문구 변경
+            result.innerHTML = `🏅 축하합니다! **[${currentBadgeName}]**를 획득했습니다! 🎉`;
+
+            // 2. 팝업 메시지(alert) 표시
+            alert(`🎉 축하합니다! 별 2개가 모여 [${currentBadgeName}]를 획득했습니다! 🏅`);
+
+            // 3. 24시간 휴식 타이머 시작
+            const lockStartTime = Date.now();
+            localStorage.setItem('lockStartTime', lockStartTime);
+            showLockUI(lockStartTime);
+        } else {
+            // 별 1개만 얻었을 때 문구
+            result.innerHTML = `✨ 미션 성공! 탐험 별(★) 1개를 얻었습니다! (한 개 더 모으면 뱃지 획득!)`;
+        }
 
         setTimeout(() => { isProcessing = false; }, 500);
     }
-
+    
     function openBook() {
         if (collectedCards.length === 0) {
             alert("아직 발견한 식물이 없습니다!");
