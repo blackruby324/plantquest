@@ -818,39 +818,40 @@ initModel();
         completeBox.style.display = 'none';
     }
 
-    [cameraInput, galleryInput].forEach(input => {
-        input.addEventListener('change', async function(e) {
+[cameraInput, galleryInput].forEach(input => {
+        input.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = async function(event) {
-                preview.src = event.target.result;
-                preview.style.display = 'block';
+            reader.onload = function(event) {
                 result.innerHTML = "🔍 식물을 분석 중입니다...";
                 missionBox.style.display = 'none';
+                preview.onload = async function() {
+                    if (model) {
+                        const predictions = await model.predict(preview);
+                        let topPrediction = predictions[0];
+                        for (let i = 1; i < predictions.length; i++) {
+                            if (predictions[i].probability > topPrediction.probability) {
+                                topPrediction = predictions[i];
+                            }
+                        }
 
-                if (model) {
-                    const predictions = await model.predict(preview);
-                    let topPrediction = predictions[0];
-                    for (let i = 1; i < predictions.length; i++) {
-                        if (predictions[i].probability > topPrediction.probability) {
-                            topPrediction = predictions[i];
+                        if (topPrediction.probability >= 0.7) {
+                            currentPlant = topPrediction.className;
+                            result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
+
+                            if (plantMissions[currentPlant]) {
+                                missionText.innerText = `🎯 [${currentPlant} 미션]\n${plantMissions[currentPlant]}`;
+                                missionBox.style.display = 'block';
+                            }
+                        } else {
+                            result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
                         }
                     }
-
-                    if (topPrediction.probability >= 0.7) {
-                        currentPlant = topPrediction.className;
-                        result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
-
-                        if (plantMissions[currentPlant]) {
-                            missionText.innerText = `🎯 [${currentPlant} 미션]\n${plantMissions[currentPlant]}`;
-                            missionBox.style.display = 'block';
-                        }
-                    } else {
-                        result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
-                    }
-                }
+                };
+                preview.src = event.target.result;
+                preview.style.display = 'block';
             };
             reader.readAsDataURL(file);
         });
