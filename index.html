@@ -934,7 +934,7 @@ initModel();
         10: "🍎 열매 뱃지"
     };
 
- function completeMission() {
+ async function completeMission() {
         if (!currentPlant || isProcessing) return;
         if (totalStars >= MAX_STARS) {
             alert("🏆 축하합니다! 이미 모든 뱃지를 모아 식물 탐험 마스터가 되셨습니다! 🎉");
