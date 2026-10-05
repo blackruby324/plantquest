@@ -31,6 +31,7 @@
             
             --complete-bg: #e8f5e9;
             --complete-border: #2e7d32;
+            --star-color: #fbc02d;
         }
 
         body.dark-mode {
@@ -49,6 +50,7 @@
             
             --complete-bg: #1b3320;
             --complete-border: #4caf50;
+            --star-color: #fdd835;
         }
 
         body { 
@@ -134,16 +136,16 @@
         .action-btn.guide-btn { background: #0288d1; }
 
         .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 25px; }
-        .character-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
-        .character-img { width: 250px; height: 250px; object-fit: contain; }
+        .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
+        .character-img { width: 220px; height: 220px; object-fit: contain; }
 
-        /* 🏅 5개 뱃지 영역 스타일 */
+        /* 🏅 5개 뱃지 + 각 뱃지별 작은 별 2개 영역 */
         .badges-wrapper {
             display: flex;
             justify-content: space-around;
             align-items: center;
             margin: 15px 0;
-            padding: 12px;
+            padding: 12px 5px;
             background: rgba(0, 0, 0, 0.03);
             border-radius: 15px;
         }
@@ -156,11 +158,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex: 1;
         }
 
         .badge-img {
-            width: 65px;
-            height: 65px;
+            width: 58px;
+            height: 58px;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
@@ -169,11 +172,12 @@
             transform: scale(1.1);
         }
 
-        .badge-label {
-            font-size: 0.8rem;
-            margin-top: 5px;
+        .badge-stars {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            color: var(--star-color);
+            letter-spacing: 1px;
             font-weight: bold;
-            color: var(--text-color);
         }
 
         #preview { 
@@ -438,30 +442,30 @@
     <h1 class="main-title">🌱 숲프렌즈 🌱</h1>
 
     <div class="character-wrapper">
-        <img id="character" class="character-img" src="character.png" alt="캐릭터" onerror="this.src='https://via.placeholder.com/250?text=Character'">
+        <img id="character" class="character-img" src="character.png" alt="캐릭터" onerror="this.src='https://via.placeholder.com/220?text=Character'">
     </div>
 
-    <!-- 🏅 총 5개의 뱃지 영역 (미획득: 흑백 사진 / 획득 시: 컬러 사진) -->
+    <!-- 🏅 5개 뱃지 및 별 획득 상태 영역 -->
     <div class="badges-wrapper">
         <div class="badge-item">
-            <img id="badge1" class="badge-img" src="badge1_off.png" onerror="this.src='https://via.placeholder.com/65?text=1_OFF'" alt="뱃지1">
-            <span class="badge-label">1번</span>
+            <img id="badge1" class="badge-img" src="badge1_off.png" onerror="this.src='https://via.placeholder.com/58?text=1_OFF'" alt="뱃지1">
+            <div id="stars1" class="badge-stars">☆ ☆</div>
         </div>
         <div class="badge-item">
-            <img id="badge2" class="badge-img" src="badge2_off.png" onerror="this.src='https://via.placeholder.com/65?text=2_OFF'" alt="뱃지2">
-            <span class="badge-label">2번</span>
+            <img id="badge2" class="badge-img" src="badge2_off.png" onerror="this.src='https://via.placeholder.com/58?text=2_OFF'" alt="뱃지2">
+            <div id="stars2" class="badge-stars">☆ ☆</div>
         </div>
         <div class="badge-item">
-            <img id="badge3" class="badge-img" src="badge3_off.png" onerror="this.src='https://via.placeholder.com/65?text=3_OFF'" alt="뱃지3">
-            <span class="badge-label">3번</span>
+            <img id="badge3" class="badge-img" src="badge3_off.png" onerror="this.src='https://via.placeholder.com/58?text=3_OFF'" alt="뱃지3">
+            <div id="stars3" class="badge-stars">☆ ☆</div>
         </div>
         <div class="badge-item">
-            <img id="badge4" class="badge-img" src="badge4_off.png" onerror="this.src='https://via.placeholder.com/65?text=4_OFF'" alt="뱃지4">
-            <span class="badge-label">4번</span>
+            <img id="badge4" class="badge-img" src="badge4_off.png" onerror="this.src='https://via.placeholder.com/58?text=4_OFF'" alt="뱃지4">
+            <div id="stars4" class="badge-stars">☆ ☆</div>
         </div>
         <div class="badge-item">
-            <img id="badge5" class="badge-img" src="badge5_off.png" onerror="this.src='https://via.placeholder.com/65?text=5_OFF'" alt="뱃지5">
-            <span class="badge-label">5번</span>
+            <img id="badge5" class="badge-img" src="badge5_off.png" onerror="this.src='https://via.placeholder.com/58?text=5_OFF'" alt="뱃지5">
+            <div id="stars5" class="badge-stars">☆ ☆</div>
         </div>
     </div>
 
@@ -478,15 +482,15 @@
     <!-- 미션 상자 -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
-        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (뱃지 획득!)</button>
+        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (별 획득! ★)</button>
     </div>
 
     <div id="completeBox">
-        <div class="complete-title" id="completeTitle">🌟 뱃지 획득 완료! 🌟</div>
+        <div class="complete-title" id="completeTitle">🌟 별 획득 완료! 🌟</div>
         <div style="font-size: 1.05rem; color: var(--title-color); font-weight: bold;" id="completeMsg">
-            새로운 뱃지를 획득했습니다!<br>24시간 동안 식물이 다시 자라기를 기다려주세요.
+            탐험 별을 획득했습니다!<br>24시간 동안 식물이 다시 자라기를 기다려주세요.
         </div>
-        <div class="timer-text" id="resetTimer">⏳ 다음 뱃지 도전까지 남은 시간: --시간 --분 --초</div>
+        <div class="timer-text" id="resetTimer">⏳ 다음 도전까지 남은 시간: --시간 --분 --초</div>
     </div>
 </div>
 
@@ -503,16 +507,16 @@
                 주변 숲이나 길가에서 지정된 식물을 카메라로 촬영해보세요.
             </div>
             <div class="guide-step">
-                <b>2. 🎯 미션 완료하기</b><br>
-                AI가 식물을 인식하면 탐험 미션이 나와요! 미션을 완료하고 버튼을 누르면 흑백 뱃지가 **컬러 뱃지 사진**으로 교체됩니다.
+                <b>2. ★ 탐험 별 모으기</b><br>
+                AI가 식물을 인식한 후 미션을 수행하면 별(★) 1개를 얻을 수 있어요!
             </div>
             <div class="guide-step">
-                <b>3. 🏅 5개 뱃지 수집</b><br>
-                총 5개의 흑백 뱃지 사진을 모두 생생한 컬러 사진으로 채워보세요!
+                <b>3. 🏅 컬러 뱃지 획득</b><br>
+                별이 2개 모일 때마다 흑백 뱃지가 멋진 **컬러 뱃지 사진**으로 채워집니다!
             </div>
             <div class="guide-step">
                 <b>4. ⏳ 24시간 휴식 시간</b><br>
-                뱃지를 1개 얻을 때마다 자연 보호를 위해 24시간 휴식 타이머가 작동해요.
+                별을 1개 얻을 때마다 자연 보호를 위해 24시간 휴식 타이머가 작동해요.
             </div>
             <div class="guide-step">
                 <b>5. 📖 나의 탐험 도감</b><br>
@@ -601,8 +605,8 @@
     const resetTimerText = document.getElementById('resetTimer');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    let plantCount = 0;
-    const MAX_PLANTS = 5;
+    let totalStars = 0; // 총 모은 별의 수 (최대 10개 = 별 2개씩 x 5개 뱃지)
+    const MAX_STARS = 10;
     let foundPlants = new Set();
 
     const RESET_TIME_MS = 24 * 60 * 60 * 1000;
@@ -679,17 +683,27 @@
 
     initTheme();
 
-    // 🏅 5개 뱃지 이미지 업데이트 함수 (흑백 ↔ 컬러 사진 교체)
+    // 🏅 뱃지 및 작은 별 UI 업데이트 로직 (별 2개당 컬러 뱃지 1개)
     function renderBadges() {
-        for (let i = 1; i <= MAX_PLANTS; i++) {
+        for (let i = 1; i <= 5; i++) {
             const badgeImg = document.getElementById(`badge${i}`);
-            if (i <= plantCount) {
-                // 획득 성공 -> 컬러 사진으로 교체
-                badgeImg.src = `badge${i}_on.png`;
+            const starsText = document.getElementById(`stars${i}`);
+
+            // i번째 뱃지에 해당하는 별 개수 계산 (0, 1, 2)
+            const starsForThisBadge = Math.max(0, Math.min(2, totalStars - (i - 1) * 2));
+
+            // 별 모양 업데이트
+            if (starsForThisBadge === 2) {
+                starsText.innerText = "★ ★";
+                badgeImg.src = `badge${i}_on.png`; // 별 2개 달성 시 컬러 뱃지!
                 badgeImg.classList.add('active');
+            } else if (starsForThisBadge === 1) {
+                starsText.innerText = "★ ☆";
+                badgeImg.src = `badge${i}_off.png`; // 흑백 유지
+                badgeImg.classList.remove('active');
             } else {
-                // 미획득 상태 -> 흑백 사진 표시
-                badgeImg.src = `badge${i}_off.png`;
+                starsText.innerText = "☆ ☆";
+                badgeImg.src = `badge${i}_off.png`; // 흑백 유지
                 badgeImg.classList.remove('active');
             }
         }
@@ -704,11 +718,11 @@
             unlockUploadUI();
         }
 
-        const savedPlantCount = localStorage.getItem('plantCount');
+        const savedTotalStars = localStorage.getItem('totalStars');
         const savedPlants = localStorage.getItem('foundPlants');
         const savedCards = localStorage.getItem('collectedCards');
 
-        if (savedPlantCount) plantCount = parseInt(savedPlantCount);
+        if (savedTotalStars) totalStars = parseInt(savedTotalStars);
         if (savedPlants) foundPlants = new Set(JSON.parse(savedPlants));
         if (savedCards) collectedCards = JSON.parse(savedCards);
 
@@ -721,18 +735,18 @@
     }
 
     function saveData() {
-        localStorage.setItem('plantCount', plantCount);
+        localStorage.setItem('totalStars', totalStars);
         localStorage.setItem('foundPlants', JSON.stringify(Array.from(foundPlants)));
         localStorage.setItem('collectedCards', JSON.stringify(collectedCards));
     }
 
     function clearSavedData() {
-        localStorage.removeItem('plantCount');
+        localStorage.removeItem('totalStars');
         localStorage.removeItem('foundPlants');
         localStorage.removeItem('lockStartTime');
         localStorage.removeItem('collectedCards');
 
-        plantCount = 0;
+        totalStars = 0;
         foundPlants = new Set();
         collectedCards = [];
 
@@ -783,12 +797,12 @@
                 clearInterval(timerInterval);
                 localStorage.removeItem('lockStartTime');
                 unlockUploadUI();
-                alert("⏰ 충전이 완료되었습니다! 다음 뱃지를 채워보세요.");
+                alert("⏰ 충전이 완료되었습니다! 다음 별 도전을 시작해보세요.");
             } else {
                 const hours = Math.floor(remaining / (1000 * 60 * 60));
                 const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-                resetTimerText.innerText = `⏳ 다음 뱃지 도전까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
+                resetTimerText.innerText = `⏳ 다음 도전까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
             }
         }, 1000);
     }
@@ -840,8 +854,8 @@
 
     function completeMission() {
         if (!currentPlant || isProcessing) return;
-        if (plantCount >= MAX_PLANTS) {
-            alert("이미 5개의 뱃지를 모두 모으셨습니다! 🎉");
+        if (totalStars >= MAX_STARS) {
+            alert("이미 모든 별과 컬러 뱃지를 모으셨습니다! 🎉");
             return;
         }
         isProcessing = true;
@@ -849,7 +863,7 @@
         playSound(correctAudio);
 
         foundPlants.add(currentPlant);
-        plantCount++;
+        totalStars++;
 
         if (!collectedCards.some(card => card.name === currentPlant)) {
             collectedCards.push({
@@ -863,9 +877,15 @@
         renderBadges();
 
         missionBox.style.display = 'none';
-        result.innerHTML = `✨ 미션 성공! 뱃지 사진이 컬러로 변했습니다!`;
+        
+        // 별 개수가 짝수(2, 4, 6, 8, 10)가 될 때 컬러 뱃지 완성 메시지 출력
+        if (totalStars % 2 === 0) {
+            result.innerHTML = `✨ 미션 성공! 별 2개가 모여 새로운 **컬러 뱃지**를 획득했습니다! 🏅`;
+        } else {
+            result.innerHTML = `✨ 미션 성공! 탐험 별(★) 1개를 얻었습니다! (한 개 더 모으면 컬러 뱃지 획득!)`;
+        }
 
-        // 뱃지 획득 후 24시간 휴식 타이머 시작
+        // 별 획득 후 24시간 휴식 타이머 시작
         const lockStartTime = Date.now();
         localStorage.setItem('lockStartTime', lockStartTime);
         showLockUI(lockStartTime);
