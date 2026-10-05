@@ -551,17 +551,21 @@
 </div>
 
 <script>
-    const URL = "https://teachablemachine.withgoogle.com/models/ebQ09FdjZ/";
-    let model, maxPredictions;
+const URL = "./";
+let model, maxPredictions;
 
-    async function initModel() {
-        if (URL.includes("YOUR_MODEL_URL")) return;
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
+async function initModel() {
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+    try {
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
+        console.log("모델 로드 성공!");
+    } catch (e) {
+        console.error("모델 로드 실패:", e);
     }
-    initModel();
+}
+initModel();
 
     const correctAudio = new Audio('answer.mp3');
     function playSound(audio) {
