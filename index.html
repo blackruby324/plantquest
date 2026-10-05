@@ -7,8 +7,9 @@
 
     <!-- 썸네일 -->
     <meta property="og:title" content="🌱 숲프렌즈 🌱">
-    <meta property="og:description" content="식물을 찾고 미션을 수행해 별을 모아보세요!">
+    <meta property="og:description" content="식물을 찾고 미션을 수행해 뱃지를 모아보세요!">
     <meta property="og:image" content="some.png">
+    
     <!-- 딥러닝 스크립트 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
@@ -20,7 +21,6 @@
             --text-color: #333333;
             --title-color: #2e7d32;
             --border-color: #e0e0e0;
-            --star-empty: #e0e0e0;
             
             --panel-bg: #ffffff;
             --panel-border: #c8e6c9;
@@ -39,7 +39,6 @@
             --text-color: #e0e6e0;
             --title-color: #81c784;
             --border-color: #334237;
-            --star-empty: #445448;
             
             --panel-bg: #18221b;
             --panel-border: #2e7d32;
@@ -130,56 +129,51 @@
             font-size: 0.85rem;
             white-space: nowrap;
         }
-        .action-btn.reset-btn {
-            background: #ff9800;
-        }
-        .action-btn.info-btn {
-            background: #4caf50;
-        }
-        .action-btn.guide-btn {
-            background: #0288d1;
-        }
+        .action-btn.reset-btn { background: #ff9800; }
+        .action-btn.info-btn { background: #4caf50; }
+        .action-btn.guide-btn { background: #0288d1; }
 
         .main-title { color: var(--title-color); margin-bottom: 15px; font-size: 1.8rem; margin-top: 25px; }
-        .character-wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
-        .character-img { width: 320px; height: 320px; object-fit: contain; }
-        
-        .stars-wrapper {
+        .character-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
+        .character-img { width: 250px; height: 250px; object-fit: contain; }
+
+        /* 🏅 5개 뱃지 영역 스타일 */
+        .badges-wrapper {
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 15px;
+            justify-content: space-around;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 15px;
         }
 
-        .star-box {
+        body.dark-mode .badges-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge-item {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .big-star {
-            font-size: 2.5rem;
-            color: var(--star-empty);
-            transition: color 0.5s ease, transform 0.3s ease;
-            line-height: 1;
+        .badge-img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
         }
 
-        .big-star.filled {
-            color: #ffca28;
-            text-shadow: 0 0 10px #ffe082;
-            transform: scale(1.15);
+        .badge-img.active {
+            transform: scale(1.1);
         }
 
-        .sub-dots {
+        .badge-label {
             font-size: 0.8rem;
-            color: #888;
-            margin-top: 4px;
-            letter-spacing: 2px;
+            margin-top: 5px;
             font-weight: bold;
-        }
-
-        .sub-dots span.active {
-            color: #ffb74d;
+            color: var(--text-color);
         }
 
         #preview { 
@@ -232,6 +226,7 @@
         }
         .btn:active { box-shadow: 0 0 #2e7d32; transform: translateY(5px); }
         .btn.disabled { background: #888 !important; box-shadow: none !important; cursor: not-allowed !important; }
+        
         .confirm-btn {
             background: #ff9800;
             color: white;
@@ -288,7 +283,6 @@
         }
         .floating-book-btn:active { transform: scale(0.95); }
 
-        /* 모달 공유 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -335,9 +329,7 @@
             border-radius: 0 8px 8px 0;
         }
 
-        body.dark-mode .guide-step {
-            background: rgba(255, 255, 255, 0.05);
-        }
+        body.dark-mode .guide-step { background: rgba(255, 255, 255, 0.05); }
 
         .pokemon-card {
             background: linear-gradient(135deg, #fffde7, #fff9c4);
@@ -446,34 +438,34 @@
     <h1 class="main-title">🌱 숲프렌즈 🌱</h1>
 
     <div class="character-wrapper">
-        <img id="character" class="character-img" src="character.png" alt="캐릭터">
+        <img id="character" class="character-img" src="character.png" alt="캐릭터" onerror="this.src='https://via.placeholder.com/250?text=Character'">
     </div>
 
-    <!-- 별 UI -->
-    <div class="stars-wrapper">
-        <div class="star-box">
-            <span class="big-star" id="star1">★</span>
-            <div class="sub-dots"><span id="dot1_1">★</span><span id="dot1_2">★</span></div>
+    <!-- 🏅 총 5개의 뱃지 영역 (미획득: 흑백 사진 / 획득 시: 컬러 사진) -->
+    <div class="badges-wrapper">
+        <div class="badge-item">
+            <img id="badge1" class="badge-img" src="badge1_off.png" onerror="this.src='https://via.placeholder.com/65?text=1_OFF'" alt="뱃지1">
+            <span class="badge-label">1번</span>
         </div>
-        <div class="star-box">
-            <span class="big-star" id="star2">★</span>
-            <div class="sub-dots"><span id="dot2_1">★</span><span id="dot2_2">★</span></div>
+        <div class="badge-item">
+            <img id="badge2" class="badge-img" src="badge2_off.png" onerror="this.src='https://via.placeholder.com/65?text=2_OFF'" alt="뱃지2">
+            <span class="badge-label">2번</span>
         </div>
-        <div class="star-box">
-            <span class="big-star" id="star3">★</span>
-            <div class="sub-dots"><span id="dot3_1">★</span><span id="dot3_2">★</span></div>
+        <div class="badge-item">
+            <img id="badge3" class="badge-img" src="badge3_off.png" onerror="this.src='https://via.placeholder.com/65?text=3_OFF'" alt="뱃지3">
+            <span class="badge-label">3번</span>
         </div>
-        <div class="star-box">
-            <span class="big-star" id="star4">★</span>
-            <div class="sub-dots"><span id="dot4_1">★</span><span id="dot4_2">★</span></div>
+        <div class="badge-item">
+            <img id="badge4" class="badge-img" src="badge4_off.png" onerror="this.src='https://via.placeholder.com/65?text=4_OFF'" alt="뱃지4">
+            <span class="badge-label">4번</span>
         </div>
-        <div class="star-box">
-            <span class="big-star" id="star5">★</span>
-            <div class="sub-dots"><span id="dot5_1">★</span><span id="dot5_2">★</span></div>
+        <div class="badge-item">
+            <img id="badge5" class="badge-img" src="badge5_off.png" onerror="this.src='https://via.placeholder.com/65?text=5_OFF'" alt="뱃지5">
+            <span class="badge-label">5번</span>
         </div>
     </div>
 
-    <!-- 사진 버튼 -->
+    <!-- 사진 업로드 영역 -->
     <div id="uploadArea">
         <button id="uploadBtn" class="btn" type="button" onclick="openPhotoChoice()">📷 식물 올리기 / 찍기</button>
         <input type="file" id="galleryInput" accept="image/*" style="display:none;">
@@ -486,15 +478,15 @@
     <!-- 미션 상자 -->
     <div id="missionBox">
         <div id="missionText" class="mission-title"></div>
-        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (작은 별 획득!)</button>
+        <button id="confirmBtn" class="confirm-btn" onclick="completeMission()">확인 (뱃지 획득!)</button>
     </div>
 
     <div id="completeBox">
-        <div class="complete-title" id="completeTitle">🌟 큰 별 획득! 충전 중 🌟</div>
+        <div class="complete-title" id="completeTitle">🌟 뱃지 획득 완료! 🌟</div>
         <div style="font-size: 1.05rem; color: var(--title-color); font-weight: bold;" id="completeMsg">
-            큰 별 1개를 완성했습니다!<br>24시간 동안 식물이 다시 자라기를 기다려주세요.
+            새로운 뱃지를 획득했습니다!<br>24시간 동안 식물이 다시 자라기를 기다려주세요.
         </div>
-        <div class="timer-text" id="resetTimer">⏳ 다음 큰 별 도전까지 남은 시간: --시간 --분 --초</div>
+        <div class="timer-text" id="resetTimer">⏳ 다음 뱃지 도전까지 남은 시간: --시간 --분 --초</div>
     </div>
 </div>
 
@@ -508,23 +500,23 @@
         <div class="guide-body">
             <div class="guide-step">
                 <b>1. 📷 식물 사진 찍기</b><br>
-                주변 숲이나 길가에서 지정된 10가지 식물 중 하나를 카메라로 촬영해보세요.
+                주변 숲이나 길가에서 지정된 식물을 카메라로 촬영해보세요.
             </div>
             <div class="guide-step">
                 <b>2. 🎯 미션 완료하기</b><br>
-                AI가 식물을 인식하면 특별한 탐험 미션이 나와요! 미션을 완료하고 버튼을 누르면 **작은 별(★)**을 받습니다.
+                AI가 식물을 인식하면 탐험 미션이 나와요! 미션을 완료하고 버튼을 누르면 흑백 뱃지가 **컬러 뱃지 사진**으로 교체됩니다.
             </div>
             <div class="guide-step">
-                <b>3. 🌟 큰 별 모으기</b><br>
-                작은 별 2개를 모을 때마다 **큰 별(★ 1개)**이 완성됩니다! 총 5개의 큰 별을 모아보세요.
+                <b>3. 🏅 5개 뱃지 수집</b><br>
+                총 5개의 흑백 뱃지 사진을 모두 생생한 컬러 사진으로 채워보세요!
             </div>
             <div class="guide-step">
                 <b>4. ⏳ 24시간 휴식 시간</b><br>
-                큰 별 1개를 얻으면 자연을 보호하기 위해 24시간 동안 휴식 타이머가 작동해요.
+                뱃지를 1개 얻을 때마다 자연 보호를 위해 24시간 휴식 타이머가 작동해요.
             </div>
             <div class="guide-step">
                 <b>5. 📖 나의 탐험 도감</b><br>
-                수집한 식물은 도감에 카드 형태로 기록되어 언제든지 설명을 확인할 수 있어요!
+                수집한 식물은 도감 카드에 모아두고 언제든지 확인할 수 있습니다.
             </div>
         </div>
     </div>
@@ -544,7 +536,7 @@
             <div class="card-body">
                 <div class="card-desc" id="cardDesc">설명 공간입니다.</div>
             </div>
-            <div class="card-footer" id="cardPageIndicator">1 / 10</div>
+            <div class="card-footer" id="cardPageIndicator">1 / 5</div>
         </div>
 
         <div class="card-nav-btns">
@@ -555,7 +547,6 @@
 </div>
 
 <script>
-    /* 딥러닝 링크 */
     const URL = "https://teachablemachine.withgoogle.com/models/ebQ09FdjZ/";
     let model, maxPredictions;
 
@@ -568,109 +559,57 @@
     }
     initModel();
 
-    // 오디오 실패 시에도 스크립트가 중단되지 않도록 예외 처리
     const correctAudio = new Audio('answer.mp3');
     function playSound(audio) {
         try {
             audio.currentTime = 0;
             let playPromise = audio.play();
             if (playPromise !== undefined) {
-                playPromise.catch(e => {
-                    console.log("모바일 자동재생 제한으로 사운드가 생략되었습니다:", e);
-                });
+                playPromise.catch(e => { console.log("사운드 재생 예외:", e); });
             }
-        } catch(e) {
-            console.log("오디오 재생 에러 무시:", e);
-        }
+        } catch(e) { console.log("오디오 재생 생략:", e); }
     }
 
     const cameraInput = document.getElementById('cameraInput');
     const galleryInput = document.getElementById('galleryInput');
     const uploadBtn = document.getElementById('uploadBtn');
 
-    // 카메라 / 사진첩 선택
-function openPhotoChoice() {
-    const choice = document.createElement("div");
+    function openPhotoChoice() {
+        const choice = document.createElement("div");
+        choice.style.cssText = `
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+        `;
+        choice.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; width: 280px;">
+                <h3 style="margin-top:0;">🌱 식물 사진 가져오기</h3>
+                <button id="takePhotoBtn" style="width:100%; padding:14px; margin:6px 0; border:none; border-radius:12px; background:#4CAF50; color:white; font-size:16px; font-weight:bold;">📷 촬영</button>
+                <button id="uploadPhotoBtn" style="width:100%; padding:14px; margin:6px 0; border:none; border-radius:12px; background:#eee; color:#333; font-size:16px; font-weight:bold;">🖼 업로드</button>
+            </div>
+        `;
+        document.body.appendChild(choice);
 
-    choice.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    `;
+        document.getElementById("takePhotoBtn").onclick = () => { choice.remove(); cameraInput.click(); };
+        document.getElementById("uploadPhotoBtn").onclick = () => { choice.remove(); galleryInput.click(); };
+    }
 
-    choice.innerHTML = `
-        <div style="
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            width: 280px;
-        ">
-            <h3 style="margin-top:0;">🌱 식물 사진 가져오기</h3>
-
-            <button id="takePhotoBtn" style="
-                width:100%;
-                padding:14px;
-                margin:6px 0;
-                border:none;
-                border-radius:12px;
-                background:#4CAF50;
-                color:white;
-                font-size:16px;
-                font-weight:bold;
-            ">📷 촬영</button>
-
-            <button id="uploadPhotoBtn" style="
-                width:100%;
-                padding:14px;
-                margin:6px 0;
-                border:none;
-                border-radius:12px;
-                background:#eee;
-                color:#333;
-                font-size:16px;
-                font-weight:bold;
-            ">🖼️ 업로드</button>
-        </div>
-    `;
-
-    document.body.appendChild(choice);
-
-    document.getElementById("takePhotoBtn").onclick = () => {
-        choice.remove();
-        cameraInput.click();
-    };
-
-    document.getElementById("uploadPhotoBtn").onclick = () => {
-        choice.remove();
-        galleryInput.click();
-    };
-}
     const preview = document.getElementById('preview');
     const result = document.getElementById('result');
-
     const missionBox = document.getElementById('missionBox');
     const missionText = document.getElementById('missionText');
     const completeBox = document.getElementById('completeBox');
-    const completeTitle = document.getElementById('completeTitle');
-    const completeMsg = document.getElementById('completeMsg');
     const resetTimerText = document.getElementById('resetTimer');
-
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
     let plantCount = 0;
-    const MAX_PLANTS = 10;
-    let foundPlants = new Set(); 
+    const MAX_PLANTS = 5;
+    let foundPlants = new Set();
 
-    const RESET_TIME_MS = 24 * 60 * 60 * 1000; // 24시간 (ms 단위)
+    const RESET_TIME_MS = 24 * 60 * 60 * 1000;
     let timerInterval = null;
 
     let currentPlant = "";
-    let isProcessing = false; // 중복 클릭 방지 변수
+    let isProcessing = false;
 
     const plantMissions = {
         "솔방울": "솔방울로 동그라미 모양 만들어보기!",
@@ -686,19 +625,19 @@ function openPhotoChoice() {
     };
 
     const plantDescriptions = {
-        "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 솔방울 안에는 소나무가 새롭게 자랄 수 있는 작은 씨앗이 들어 있답니다. 🌲",
-        "밤": "밤은 밤나무에서 자라는 열매로, 뾰족뾰족한 가시가 있는 껍질 속에 들어 있어요. 껍질을 벗기면 갈색의 동그란 밤을 볼 수 있고, 삶거나 구워서 맛있게 먹을 수 있답니다. 🌰",
-        "도토리": "도토리는 참나무에서 열리는 열매로, 동그랗고 갈색이며 위쪽에 작은 모자가 씌워져 있어요. 가을이 되면 나무에서 떨어져 숲속 다람쥐나 여러 동물들이 먹이로 이용한답니다. 🌰",
-        "단풍잎": "단풍잎은 가을이 되면 초록색에서 빨강, 노랑, 주황색 등으로 예쁘게 색이 변하는 나뭇잎이에요. 날씨가 추워지면 나뭇잎이 나무에서 떨어져 바닥을 알록달록하게 꾸며준답니다. 🍁",
-        "은행잎": "은행잎은 은행나무에서 자라는 잎으로, 부채처럼 생긴 독특한 모양을 가지고 있어요. 가을이 되면 초록색에서 노란색으로 변하고, 바람이 불면 바닥에 노랗게 떨어진답니다. 💛",
-        "감": "감은 감나무에서 열리는 가을 열매로, 동그랗고 주황색을 띠고 있어요. 잘 익은 감은 달콤하고 부드러우며, 말려서 곶감으로 만들어 먹기도 한답니다. 🟠",
-        "소나무": "소나무는 사계절 내내 초록색 잎을 볼 수 있는 나무예요. 뾰족하고 가느다란 잎이 모여 자라며, 솔방울도 소나무에서 열린답니다. 🌲",
-        "강아지풀": "강아지풀은 길쭉한 줄기 끝에 강아지 꼬리처럼 보이는 작은 꽃이삭이 달린 풀이에요. 손으로 살짝 만지면 보들보들한 느낌이 나고, 가을이 되면 노란빛이나 갈색으로 변한답니다. 🌾",
-        "코스모스": "코스모스는 가을에 많이 볼 수 있는 예쁜 꽃으로, 분홍색·하얀색·보라색 등 다양한 색깔이 있어요. 가느다란 줄기에 꽃이 피며, 바람이 불면 살랑살랑 흔들리는 모습이 아름답답니다. 🌸",
-        "떡갈나무잎": "떡잎은 씨앗에서 싹이 나올 때 처음 나오는 잎으로, 어린 식물이 자라는 데 필요한 영양분을 담고 있어요. 식물이 자라면서 진짜 잎이 나오면 떡잎은 점점 작아지고 떨어지기도 한답니다. 🌱"
+        "솔방울": "솔방울은 소나무에서 자라는 열매로, 갈색의 딱딱한 비늘 모양이 겹겹이 붙어 있어요. 🌲",
+        "밤": "밤은 밤나무에서 자라는 열매로, 뾰족뾰족한 가시 껍질 속에 들어 있답니다. 🌰",
+        "도토리": "도토리는 참나무에서 열리는 열매로, 다람쥐나 여러 동물들의 중요한 먹이예요. 🌰",
+        "단풍잎": "단풍잎은 가을이 되면 알록달록 예쁘게 색이 변하는 나뭇잎입니다. 🍁",
+        "은행잎": "은행잎은 부채처럼 생긴 독특한 모양을 가지고 있어요. 💛",
+        "감": "감은 가을 열매로, 달콤하고 말려서 곶감으로 먹기도 합니다. 🟠",
+        "소나무": "소나무는 사계절 내내 초록색 잎을 유지하는 멋진 나무입니다. 🌲",
+        "강아지풀": "강아지풀은 강아지 꼬리처럼 보이는 부드러운 풀이에요. 🌾",
+        "코스모스": "코스모스는 가을을 대표하는 알록달록하고 아름다운 꽃입니다. 🌸",
+        "떡갈나무잎": "떡갈나무잎은 크고 튼튼하며 숲속 생태계에 도움을 줍니다. 🌱"
     };
 
-    let collectedCards = []; 
+    let collectedCards = [];
     let currentCardIndex = 0;
 
     function toggleSettingsMenu() {
@@ -715,22 +654,12 @@ function openPhotoChoice() {
         document.getElementById('guideModal').style.display = 'none';
     }
 
-    window.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('settingsDropdown');
-        const settingsBtn = document.querySelector('.top-left-settings .icon-btn');
-        if (dropdown && !dropdown.contains(e.target) && !settingsBtn.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-
     function initTheme() {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.body.classList.add('dark-mode');
             themeToggleBtn.innerText = "라이트모드";
-        } 
-        
-        else {
+        } else {
             document.body.classList.remove('dark-mode');
             themeToggleBtn.innerText = "다크모드";
         }
@@ -744,37 +673,24 @@ function openPhotoChoice() {
     }
 
     function showPlantList() {
-        const plantKeys = Object.keys(plantMissions);
-        alert("🌱 인식 가능한 식물 목록 (10종) 🌱\n\n" + plantKeys.join(", "));
+        alert("🌱 인식 가능한 식물 목록 🌱\n\n" + Object.keys(plantMissions).join(", "));
         toggleSettingsMenu();
     }
 
     initTheme();
 
-    function renderStars() {
-        for (let group = 1; group <= 5; group++) {
-            const bigStar = document.getElementById(`star${group}`);
-            const dot1 = document.getElementById(`dot${group}_1`);
-            const dot2 = document.getElementById(`dot${group}_2`);
-
-            const requiredPlantsForGroup = group * 2;
-
-            if (plantCount >= requiredPlantsForGroup) {
-                bigStar.classList.add('filled');
-                dot1.classList.add('active');
-                dot2.classList.add('active');
-            } 
-            
-            else if (plantCount === requiredPlantsForGroup - 1) {
-                bigStar.classList.remove('filled');
-                dot1.classList.add('active');
-                dot2.classList.remove('active');
-            } 
-            
-            else {
-                bigStar.classList.remove('filled');
-                dot1.classList.remove('active');
-                dot2.classList.remove('active');
+    // 🏅 5개 뱃지 이미지 업데이트 함수 (흑백 ↔ 컬러 사진 교체)
+    function renderBadges() {
+        for (let i = 1; i <= MAX_PLANTS; i++) {
+            const badgeImg = document.getElementById(`badge${i}`);
+            if (i <= plantCount) {
+                // 획득 성공 -> 컬러 사진으로 교체
+                badgeImg.src = `badge${i}_on.png`;
+                badgeImg.classList.add('active');
+            } else {
+                // 미획득 상태 -> 흑백 사진 표시
+                badgeImg.src = `badge${i}_off.png`;
+                badgeImg.classList.remove('active');
             }
         }
     }
@@ -796,7 +712,7 @@ function openPhotoChoice() {
         if (savedPlants) foundPlants = new Set(JSON.parse(savedPlants));
         if (savedCards) collectedCards = JSON.parse(savedCards);
 
-        renderStars();
+        renderBadges();
 
         const currentLockTime = localStorage.getItem('lockStartTime');
         if (currentLockTime) {
@@ -820,7 +736,7 @@ function openPhotoChoice() {
         foundPlants = new Set();
         collectedCards = [];
 
-        renderStars();
+        renderBadges();
         unlockUploadUI();
 
         result.innerHTML = "";
@@ -830,267 +746,136 @@ function openPhotoChoice() {
     }
 
     function manualReset() {
-        if (confirm("탐험 기록을 모두 초기화하고 다시 시작할까요?")) {
+        if (confirm("모든 탐험 기록과 뱃지를 초기화할까요?")) {
             clearSavedData();
-            alert("탐험 데이터가 초기화되었습니다.");
+            alert("초기화되었습니다.");
             toggleSettingsMenu();
         }
     }
 
-    // 테스트용 비밀번호: 입력하면 현재 24시간 잠금이 3초 남은 상태가 됩니다.
     function testPassword() {
         const password = prompt("🔑 테스트 비밀번호를 입력하세요.");
-
         if (password === "1234") {
             const testLockStartTime = Date.now() - RESET_TIME_MS + 3000;
             localStorage.setItem('lockStartTime', testLockStartTime);
-
             if (timerInterval) clearInterval(timerInterval);
             showLockUI(testLockStartTime);
-
-            alert("✅ 테스트 비밀번호가 확인되었습니다.\n3초 후 잠금이 해제됩니다!");
+            alert("테스트모드: 잠금 해제까지 3초 남았습니다.");
             toggleSettingsMenu();
-        } 
-        
-        else if (password !== null) {
-            alert("❌ 비밀번호가 틀렸습니다.");
+        } else if (password !== null) {
+            alert("비밀번호가 올바르지 않습니다.");
         }
     }
 
-    function startResetTimer(startTime) {
+    function showLockUI(startTime) {
+        uploadBtn.classList.add('disabled');
+        uploadBtn.disabled = true;
+        uploadBtn.innerText = "⏳ 충전 중 (사진 업로드 불가)";
+        completeBox.style.display = 'block';
+
         if (timerInterval) clearInterval(timerInterval);
 
-        function updateTimer() {
-            const now = Date.now();
-            const elapsed = now - startTime;
+        timerInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
             const remaining = RESET_TIME_MS - elapsed;
 
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 localStorage.removeItem('lockStartTime');
                 unlockUploadUI();
-                alert("⏰ 24시간이 지나 다음 큰 별에 도전할 수 있습니다!");
-                return;
+                alert("⏰ 충전이 완료되었습니다! 다음 뱃지를 채워보세요.");
+            } else {
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                resetTimerText.innerText = `⏳ 다음 뱃지 도전까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
             }
-
-            const hours = Math.floor(remaining / (1000 * 60 * 60));
-            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-
-            resetTimerText.innerText = `⏳ 다음 도전까지 남은 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
-        }
-
-        updateTimer();
-        timerInterval = setInterval(updateTimer, 1000);
-    }
-
-    function showLockUI(startTime) {
-        completeBox.style.display = 'block';
-        uploadBtn.classList.add('disabled');
-        uploadBtn.innerText = "⏳ 24시간 휴식 중...";
-        cameraInput.disabled = true;
-
-        if (plantCount >= MAX_PLANTS) {
-            completeTitle.innerText = "🏆 모든 큰 별 완수! 🏆";
-            completeMsg.innerHTML = "큰 별 5개를 모두 모으셨습니다!<br>축하합니다, 최고의 식물 탐험가예요!";
-        } 
-        
-        else {
-            completeTitle.innerText = "🌟 큰 별 획득! 휴식 중 🌟";
-            completeMsg.innerHTML = `큰 별 ${Math.floor(plantCount / 2)}개를 모았습니다!<br>24시간 후 다음 큰 별 도전에 참여해보세요.`;
-        }
-
-        startResetTimer(startTime);
+        }, 1000);
     }
 
     function unlockUploadUI() {
-        completeBox.style.display = 'none';
         uploadBtn.classList.remove('disabled');
+        uploadBtn.disabled = false;
         uploadBtn.innerText = "📷 식물 올리기 / 찍기";
-        cameraInput.disabled = false;
-        if (timerInterval) clearInterval(timerInterval);
+        completeBox.style.display = 'none';
     }
 
-    loadSavedState();
+    [cameraInput, galleryInput].forEach(input => {
+        input.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-    async function classifyImage(imageElement) {
-        if (!model) {
-            const plantKeys = Object.keys(plantMissions);
-            const randomIndex = Math.floor(Math.random() * (plantKeys.length + 1));
-            return plantKeys[randomIndex] ? { className: plantKeys[randomIndex], probability: 0.85 } : { className: "unknown", probability: 0.3 };
-        }
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+                result.innerHTML = "🔍 식물을 분석 중입니다...";
+                missionBox.style.display = 'none';
 
-        const prediction = await model.predict(imageElement);
-        prediction.sort((a, b) => b.probability - a.probability);
-        return prediction[0];
-    }
-
-    // 선택한 사진 처리
-    function handleImageFile(file) {
-        if (localStorage.getItem('lockStartTime')) return;
-        if (!file) return;
-
-        missionBox.style.display = 'none';
-        currentPlant = "";
-        result.innerHTML = "🔍 AI 식물 분석 중...";
-
-        const reader = new FileReader();
-
-        reader.onload = function(event) {
-            preview.src = event.target.result;
-        };
-
-        preview.onload = async function() {
-            preview.style.display = 'block';
-
-            try {
-                const topPrediction = await classifyImage(preview);
-                const plantName = topPrediction.className;
-                const confidence = topPrediction.probability;
-
-                if (plantMissions.hasOwnProperty(plantName) && confidence >= 0.70) {
-                    if (foundPlants.has(plantName)) {
-                        result.innerHTML = `🌿 <b>${plantName}</b> 발견!<br><span style="color:#e65100; font-size:1rem;">이미 별을 모은 항목입니다. 다른 식물을 찾아보세요!</span>`;
-                    } 
-                    
-                    else {
-                        currentPlant = plantName;
-                        result.innerHTML = `🌿 <b>${currentPlant}</b> 발견!`;
-
-                        const mission = plantMissions[currentPlant];
-                        missionText.innerHTML = `<b>🎯 [탐험 미션]</b><br>${mission}`;
-                        missionBox.style.display = 'block';
+                if (model) {
+                    const predictions = await model.predict(preview);
+                    let topPrediction = predictions[0];
+                    for (let i = 1; i < predictions.length; i++) {
+                        if (predictions[i].probability > topPrediction.probability) {
+                            topPrediction = predictions[i];
+                        }
                     }
-                } 
-                
-                else {
-                    currentPlant = "";
-                    result.innerHTML = `❌ <b>인식 실패!</b><br><span style="color:#e65100; font-size:0.95rem;">지정된 10가지 식물이 아니거나 잘 보이지 않아요.<br>밝은 곳에서 식물만 크게 다시 찍어주세요!</span>`;
-                }
-            } catch (error) {
-                console.error("식물 분석 오류:", error);
-                result.innerHTML = `⚠️ 사진 분석 중 오류가 발생했습니다.<br>사진을 다시 선택해주세요.`;
-            }
 
-            cameraInput.value = "";
-            galleryInput.value = "";
-        };
+                    if (topPrediction.probability >= 0.7) {
+                        currentPlant = topPrediction.className;
+                        result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
 
-        reader.readAsDataURL(file);
-    }
-
-    // 카메라
-    cameraInput.addEventListener('change', function(e) {
-        handleImageFile(e.target.files[0]);
-    });
-
-    // 사진첩
-    galleryInput.addEventListener('change', function(e) {
-        handleImageFile(e.target.files[0]);
-    });
-
-    /* 미션 완료 */
-    async function compressImage(imageSrc) {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const maxSize = 800;
-
-                let width = img.width;
-                let height = img.height;
-
-                if (width > height) {
-                    if (width > maxSize) {
-                        height *= maxSize / width;
-                        width = maxSize;
-                    }
-                } 
-                
-                else {
-                    if (height > maxSize) {
-                        width *= maxSize / height;
-                        height = maxSize;
+                        if (plantMissions[currentPlant]) {
+                            missionText.innerText = `🎯 [${currentPlant} 미션]\n${plantMissions[currentPlant]}`;
+                            missionBox.style.display = 'block';
+                        }
+                    } else {
+                        result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
                     }
                 }
-
-                canvas.width = Math.round(width);
-                canvas.height = Math.round(height);
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                // 도감 저장용 사진을 JPEG로 압축
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
             };
-
-            img.onerror = reject;
-            img.src = imageSrc;
+            reader.readAsDataURL(file);
         });
-    }
+    });
 
-    async function completeMission() {
-        if (!currentPlant || localStorage.getItem('lockStartTime') || isProcessing) return;
-
+    function completeMission() {
+        if (!currentPlant || isProcessing) return;
+        if (plantCount >= MAX_PLANTS) {
+            alert("이미 5개의 뱃지를 모두 모으셨습니다! 🎉");
+            return;
+        }
         isProcessing = true;
 
-        const targetPlant = currentPlant;
-        currentPlant = "";
-        missionBox.style.display = 'none';
+        playSound(correctAudio);
 
-        try {
-            playSound(correctAudio);
+        foundPlants.add(currentPlant);
+        plantCount++;
 
-            // 모바일 localStorage 용량 문제를 막기 위해 사진 압축
-            const compressedImage = await compressImage(preview.src);
-
-            foundPlants.add(targetPlant);
-
-            const existingIndex = collectedCards.findIndex(item => item.name === targetPlant);
-
-            if (existingIndex >= 0) {
-                collectedCards[existingIndex].img = compressedImage;
-            } 
-            
-            else {
-                collectedCards.push({
-                    name: targetPlant,
-                    img: compressedImage
-                });
-            }
-
-            plantCount++;
-            renderStars();
-            saveData();
-
-            const bigStarEarned = (plantCount % 2 === 0);
-            const currentBigStarNum = Math.floor(plantCount / 2);
-
-            if (bigStarEarned) {
-                const now = Date.now();
-
-                localStorage.setItem('lockStartTime', now);
-
-                result.innerHTML = `🌟 축하합니다! <b>${currentBigStarNum}번째 큰 별</b>을 얻었습니다!`;
-                showLockUI(now);
-            } 
-            
-            else {
-                result.innerHTML = `⭐ 식물 발견! 작은 별 1개를 모았습니다. (식물 1개만 더 찾으면 큰 별 완성!)`;
-            }
-
-        } catch (error) {
-            console.error("미션 완료 오류:", error);
-            result.innerHTML = `⚠️ 저장 중 문제가 발생했습니다.<br>사진을 다시 선택해서 시도해주세요.`;
-        } finally {
-            isProcessing = false;
+        if (!collectedCards.some(card => card.name === currentPlant)) {
+            collectedCards.push({
+                name: currentPlant,
+                img: preview.src,
+                desc: plantDescriptions[currentPlant] || "식물 설명이 준비 중입니다."
+            });
         }
+
+        saveData();
+        renderBadges();
+
+        missionBox.style.display = 'none';
+        result.innerHTML = `✨ 미션 성공! 뱃지 사진이 컬러로 변했습니다!`;
+
+        // 뱃지 획득 후 24시간 휴식 타이머 시작
+        const lockStartTime = Date.now();
+        localStorage.setItem('lockStartTime', lockStartTime);
+        showLockUI(lockStartTime);
+
+        setTimeout(() => { isProcessing = false; }, 500);
     }
 
     function openBook() {
         if (collectedCards.length === 0) {
-            alert("아직 수집한 식물이 없어요! 미션을 성공해서 카드를 모아보세요.");
+            alert("아직 발견한 식물이 없습니다!");
             return;
         }
         currentCardIndex = 0;
@@ -1103,14 +888,10 @@ function openPhotoChoice() {
     }
 
     function updateCardUI() {
-        if (collectedCards.length === 0) return;
-
-        const currentData = collectedCards[currentCardIndex];
-        const plantName = currentData.name;
-
-        document.getElementById('cardTitle').innerText = plantName;
-        document.getElementById('cardImage').src = currentData.img;
-        document.getElementById('cardDesc').innerText = plantDescriptions[plantName] || "멋진 탐험 식물입니다!";
+        const card = collectedCards[currentCardIndex];
+        document.getElementById('cardTitle').innerText = card.name;
+        document.getElementById('cardImage').src = card.img;
+        document.getElementById('cardDesc').innerText = card.desc;
         document.getElementById('cardPageIndicator').innerText = `${currentCardIndex + 1} / ${collectedCards.length}`;
     }
 
@@ -1125,6 +906,8 @@ function openPhotoChoice() {
         currentCardIndex = (currentCardIndex + 1) % collectedCards.length;
         updateCardUI();
     }
+
+    loadSavedState();
 </script>
 
 </body>
