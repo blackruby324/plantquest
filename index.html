@@ -162,8 +162,8 @@
         }
 
         .badge-img {
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
@@ -838,16 +838,17 @@ initModel();
                             }
                         }
 
-                        if (topPrediction.probability >= 0.7) {
+                        // 💡 확률 70% 이상이고, 클래스 이름이 'Class'로 시작하지 않는 정상 식물만 인식!
+                        if (topPrediction.probability >= 0.7 && !topPrediction.className.startsWith("Class")) {
                             currentPlant = topPrediction.className;
 
-                            // 💡 이미 얻은 식물인지 검사 (스크립트 처리)
+                            // 이미 발견한 식물인 경우 중복 처리
                             if (foundPlants.has(currentPlant)) {
                                 result.innerHTML = `⚠️ <b>${currentPlant}</b>(은)는 이미 도감에 등록된 식물입니다!<br>아직 발견하지 못한 다른 식물을 찾아보세요.`;
-                                currentPlant = null; // 미션 버튼이 작동하지 않게 만듦
+                                currentPlant = null;
                                 missionBox.style.display = 'none';
                             } else {
-                                // 처음 발견한 식물일 때만 미션 창을 띄움
+                                // 처음 발견한 식물일 때만 정상 진행
                                 result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
 
                                 if (plantMissions[currentPlant]) {
@@ -856,6 +857,7 @@ initModel();
                                 }
                             }
                         } else {
+                            // Class 13이 나오거나 인식 확률이 낮으면 안내 문구 출력
                             result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
                         }
                     }
