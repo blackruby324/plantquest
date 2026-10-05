@@ -162,8 +162,8 @@
         }
 
         .badge-img {
-            width: 58px;
-            height: 58px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
@@ -827,6 +827,7 @@ initModel();
             reader.onload = function(event) {
                 result.innerHTML = "🔍 식물을 분석 중입니다...";
                 missionBox.style.display = 'none';
+
                 preview.onload = async function() {
                     if (model) {
                         const predictions = await model.predict(preview);
@@ -839,24 +840,34 @@ initModel();
 
                         if (topPrediction.probability >= 0.7) {
                             currentPlant = topPrediction.className;
-                            result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
 
-                            if (plantMissions[currentPlant]) {
-                                missionText.innerText = `🎯 [${currentPlant} 미션]\n${plantMissions[currentPlant]}`;
-                                missionBox.style.display = 'block';
+                            // 💡 이미 얻은 식물인지 검사 (스크립트 처리)
+                            if (foundPlants.has(currentPlant)) {
+                                result.innerHTML = `⚠️ <b>${currentPlant}</b>(은)는 이미 도감에 등록된 식물입니다!<br>아직 발견하지 못한 다른 식물을 찾아보세요.`;
+                                currentPlant = null; // 미션 버튼이 작동하지 않게 만듦
+                                missionBox.style.display = 'none';
+                            } else {
+                                // 처음 발견한 식물일 때만 미션 창을 띄움
+                                result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
+
+                                if (plantMissions[currentPlant]) {
+                                    missionText.innerText = `🎯 [${currentPlant} 미션]\n${plantMissions[currentPlant]}`;
+                                    missionBox.style.display = 'block';
+                                }
                             }
                         } else {
                             result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
                         }
                     }
                 };
+
                 preview.src = event.target.result;
                 preview.style.display = 'block';
             };
             reader.readAsDataURL(file);
         });
     });
-
+    
 const badgeNames = {
         2: "🌱 씨앗 뱃지",
         4: "🌿 새싹 뱃지",
