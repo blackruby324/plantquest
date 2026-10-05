@@ -868,7 +868,8 @@ initModel();
         });
     });
     
-const badgeNames = {
+// 🏅 뱃지 단계별 이름 정의 (씨앗 -> 새싹 -> 풀잎 -> 꽃 -> 열매)
+    const badgeNames = {
         2: "🌱 씨앗 뱃지",
         4: "🌿 새싹 뱃지",
         6: "🍃 풀잎 뱃지",
@@ -879,9 +880,10 @@ const badgeNames = {
     function completeMission() {
         if (!currentPlant || isProcessing) return;
         if (totalStars >= MAX_STARS) {
-            alert("이미 모든 별과 컬러 뱃지를 모으셨습니다! 🎉");
+            alert("🏆 축하합니다! 이미 모든 뱃지를 모아 식물 탐험 마스터가 되셨습니다! 🎉");
             return;
         }
+        
         isProcessing = true;
 
         playSound(correctAudio);
@@ -902,22 +904,22 @@ const badgeNames = {
 
         missionBox.style.display = 'none';
         
-        // 💡 별 개수가 짝수(2, 4, 6, 8, 10개)가 되어 컬러 뱃지를 달성했을 때
         if (totalStars % 2 === 0) {
             const currentBadgeName = badgeNames[totalStars] || "컬러 뱃지";
 
-            // 1. 화면 텍스트 문구 변경
-            result.innerHTML = `🏅 축하합니다! **[${currentBadgeName}]**를 획득했습니다! 🎉`;
+            if (totalStars === MAX_STARS) {
+                result.innerHTML = `🏆 **축하합니다! 모든 뱃지를 수집하여 [식물 탐험 마스터]가 되었습니다!** 🎊`;
+                alert(`🎉 대단해요! [${currentBadgeName}]까지 모두 모아 [Forest Friends] 탐험을 완수하셨습니다! 🏆✨`);
+            } 
+            else {
+                result.innerHTML = `🏅 축하합니다! **[${currentBadgeName}]**를 획득했습니다! 🎉`;
+                alert(`🎉 축하합니다! 별 2개가 모여 [${currentBadgeName}]를 획득했습니다! 🏅`);
 
-            // 2. 팝업 메시지(alert) 표시
-            alert(`🎉 축하합니다! 별 2개가 모여 [${currentBadgeName}]를 획득했습니다! 🏅`);
-
-            // 3. 24시간 휴식 타이머 시작
-            const lockStartTime = Date.now();
-            localStorage.setItem('lockStartTime', lockStartTime);
-            showLockUI(lockStartTime);
+                const lockStartTime = Date.now();
+                localStorage.setItem('lockStartTime', lockStartTime);
+                showLockUI(lockStartTime);
+            }
         } else {
-            // 별 1개만 얻었을 때 문구
             result.innerHTML = `✨ 미션 성공! 탐험 별(★) 1개를 얻었습니다! (한 개 더 모으면 뱃지 획득!)`;
         }
 
