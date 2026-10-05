@@ -823,14 +823,31 @@ initModel();
             const file = e.target.files[0];
             if (!file) return;
 
+            result.innerHTML = "🔍 식물을 분석 중입니다...";
+            missionBox.style.display = 'none';
+
             const reader = new FileReader();
             reader.onload = function(event) {
-                result.innerHTML = "🔍 식물을 분석 중입니다...";
-                missionBox.style.display = 'none';
+                const img = new Image();
+                img.onload = async function() {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
 
-                preview.onload = async function() {
-                    if (model) {
-                        const predictions = await model.predict(preview);
+                    if (!model) {
+                        result.innerHTML = "⚠️ AI 모델이 로드되지 않았습니다.";
+                        return;
+                    }
+
+                    try {
+                        // 224x224 캔버스 생성 (AI 분석 및 압축용)
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 224;
+                        canvas.height = 224;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 224, 224);
+
+                        // AI 분석
+                        const predictions = await model.predict(canvas);
                         let topPrediction = predictions[0];
                         for (let i = 1; i < predictions.length; i++) {
                             if (predictions[i].probability > topPrediction.probability) {
@@ -838,17 +855,14 @@ initModel();
                             }
                         }
 
-                        // 💡 확률 70% 이상이고, 클래스 이름이 'Class'로 시작하지 않는 정상 식물만 인식!
                         if (topPrediction.probability >= 0.7 && !topPrediction.className.startsWith("Class")) {
                             currentPlant = topPrediction.className;
 
-                            // 이미 발견한 식물인 경우 중복 처리
                             if (foundPlants.has(currentPlant)) {
                                 result.innerHTML = `⚠️ <b>${currentPlant}</b>(은)는 이미 도감에 등록된 식물입니다!<br>아직 발견하지 못한 다른 식물을 찾아보세요.`;
                                 currentPlant = null;
                                 missionBox.style.display = 'none';
                             } else {
-                                // 처음 발견한 식물일 때만 정상 진행
                                 result.innerHTML = `🌿 발견한 식물: <b>${currentPlant}</b>!`;
 
                                 if (plantMissions[currentPlant]) {
@@ -857,18 +871,19 @@ initModel();
                                 }
                             }
                         } else {
-                            // Class 13이 나오거나 인식 확률이 낮으면 안내 문구 출력
                             result.innerHTML = "❓ 무슨 식물인지 잘 모르겠어요. 다시 찍어주세요!";
                         }
+                    } catch (err) {
+                        console.error("분석 오류:", err);
+                        result.innerHTML = "⚠️ 분석 중 오류가 발생했습니다.";
                     }
                 };
-
-                preview.src = event.target.result;
-                preview.style.display = 'block';
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         });
     });
+
     
 // 🏅 뱃지 단계별 이름 정의 (씨앗 -> 새싹 -> 풀잎 -> 꽃 -> 열매)
     const badgeNames = {
@@ -881,6 +896,7 @@ initModel();
 
     function completeMission() {
         if (!currentPlant || isProcessing) return;
+        
         if (totalStars >= MAX_STARS) {
             alert("🏆 축하합니다! 이미 모든 뱃지를 모아 식물 탐험 마스터가 되셨습니다! 🎉");
             return;
@@ -893,10 +909,11 @@ initModel();
         foundPlants.add(currentPlant);
         totalStars++;
 
+        // 도감에 원본 대용량 이미지 대신 압축된 preview 데이터 저장
         if (!collectedCards.some(card => card.name === currentPlant)) {
             collectedCards.push({
                 name: currentPlant,
-                img: preview.src,
+                img: preview.src, 
                 desc: plantDescriptions[currentPlant] || "식물 설명이 준비 중입니다."
             });
         }
@@ -912,13 +929,16 @@ initModel();
             if (totalStars === MAX_STARS) {
                 result.innerHTML = `🏆 **축하합니다! 모든 뱃지를 수집하여 [식물 탐험 마스터]가 되었습니다!** 🎊`;
                 alert(`🎉 대단해요! [${currentBadgeName}]까지 모두 모아 [Forest Friends] 탐험을 완수하셨습니다! 🏆✨`);
-            } 
-            else {
+            } else {
                 result.innerHTML = `🏅 축하합니다! **[${currentBadgeName}]**를 획득했습니다! 🎉`;
                 alert(`🎉 축하합니다! 별 2개가 모여 [${currentBadgeName}]를 획득했습니다! 🏅`);
 
                 const lockStartTime = Date.now();
-                localStorage.setItem('lockStartTime', lockStartTime);
+                try {
+                    localStorage.setItem('lockStartTime', lockStartTime);
+                } catch(e) {
+                    console.warn("시크릿 모드 타이머 저장 제한:", e);
+                }
                 showLockUI(lockStartTime);
             }
         } else {
